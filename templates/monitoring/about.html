@@ -1,0 +1,153 @@
+{% extends 'monitoring/base.html' %}
+{% load static %}
+
+{% block title %}About SkyGuard AI — SIH 26073{% endblock %}
+{% block header_title %}About SkyGuard AI & System Architecture{% endblock %}
+
+{% block content %}
+<!-- USP Hero Banner -->
+<div class="card-custom text-center p-5 mb-4 position-relative overflow-hidden bg-white">
+    <div style="max-width: 860px; margin: 0 auto;" class="position-relative z-1">
+        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 fs-6 mb-3">
+            <i class="fa-solid fa-lightbulb me-1"></i> SIH 26073 — Unique Selling Proposition
+        </span>
+
+        <h1 class="font-heading fs-2 fw-bold text-dark mb-3" style="line-height: 1.3;">
+            "We don't just detect an anomaly; we determine whether the weather is actually unusual or the sensor is wrong."
+        </h1>
+
+        <p class="text-secondary fs-6 mb-0">
+            An intelligent, multi-level automatic weather station (AWS) diagnostic platform engineered for the India Meteorological Department (IMD) to eliminate false alarms and guarantee telemetry integrity during severe weather events.
+        </p>
+    </div>
+</div>
+
+<!-- Architecture Diagram Section -->
+<div class="card-custom mb-4">
+    <div class="card-header-custom">
+        <h3 class="card-title-custom">
+            <i class="fa-solid fa-diagram-project text-primary"></i> 4-Level Pipeline System Architecture
+        </h3>
+    </div>
+
+    <!-- Clean SVG Architecture Diagram (Light Theme) -->
+    <div class="p-3 text-center">
+        <svg viewBox="0 0 1000 240" class="w-100" style="max-height: 240px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;">
+            <!-- Flow arrows -->
+            <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7" />
+                </marker>
+            </defs>
+
+            <!-- Level 1 QC Box -->
+            <rect x="20" y="70" width="160" height="100" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+            <text x="100" y="105" fill="#0284c7" font-family="Outfit" font-size="14" font-weight="700" text-anchor="middle">Level 1: Rule QC</text>
+            <text x="100" y="130" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Climatological Bounds</text>
+            <text x="100" y="148" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Rate of Change Limits</text>
+
+            <line x1="180" y1="120" x2="220" y2="120" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)"/>
+
+            <!-- Level 2 ML Box -->
+            <rect x="220" y="70" width="160" height="100" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="300" y="105" fill="#7c3aed" font-family="Outfit" font-size="14" font-weight="700" text-anchor="middle">Level 2: ML Engine</text>
+            <text x="300" y="130" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Isolation Forest</text>
+            <text x="300" y="148" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Drift & Flatline Model</text>
+
+            <line x1="380" y1="120" x2="420" y2="120" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)"/>
+
+            <!-- Level 3 Thermodynamics -->
+            <rect x="420" y="70" width="170" height="100" rx="10" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+            <text x="505" y="105" fill="#d97706" font-family="Outfit" font-size="14" font-weight="700" text-anchor="middle">Level 3: Physics</text>
+            <text x="505" y="130" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Thermodynamics</text>
+            <text x="505" y="148" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Clausius-Clapeyron</text>
+
+            <line x1="590" y1="120" x2="630" y2="120" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)"/>
+
+            <!-- Level 4 Spatial Consensus -->
+            <rect x="630" y="70" width="170" height="100" rx="10" fill="#ffffff" stroke="#059669" stroke-width="2"/>
+            <text x="715" y="105" fill="#059669" font-family="Outfit" font-size="14" font-weight="700" text-anchor="middle">Level 4: Spatial</text>
+            <text x="715" y="130" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Inverse Distance Weighting</text>
+            <text x="715" y="148" fill="#64748b" font-family="Inter" font-size="11" text-anchor="middle">Spatial Consensus</text>
+
+            <line x1="800" y1="120" x2="835" y2="120" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)"/>
+
+            <!-- Synthesis & Decision Engine -->
+            <rect x="835" y="55" width="145" height="130" rx="10" fill="linear-gradient(135deg, #0284c7, #2563eb)" stroke="#0284c7" stroke-width="2"/>
+            <text x="907" y="95" fill="#ffffff" font-family="Outfit" font-size="14" font-weight="800" text-anchor="middle">Decision Engine</text>
+            <text x="907" y="120" fill="#ffffff" font-family="Inter" font-size="11" text-anchor="middle">XAI Diagnostics</text>
+            <text x="907" y="138" fill="#ffffff" font-family="Inter" font-size="11" text-anchor="middle">Data Imputation</text>
+            <text x="907" y="156" fill="#ffffff" font-family="Inter" font-size="11" text-anchor="middle">Alert Dispatch</text>
+        </svg>
+    </div>
+</div>
+
+<!-- What Makes SkyGuard AI Different & Problem Statement -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom">
+                    <i class="fa-solid fa-rocket text-warning"></i> What Makes SkyGuard AI Different
+                </h3>
+            </div>
+            
+            <ul class="list-unstyled d-flex flex-column gap-3 mb-0 text-secondary small">
+                <li class="d-flex align-items-start gap-3">
+                    <div class="stat-icon-wrapper flex-shrink-0" style="width: 36px; height: 36px; background: rgba(2, 132, 199, 0.1); color: var(--accent-blue);">
+                        <i class="fa-solid fa-cloud-bolt fs-6"></i>
+                    </div>
+                    <div>
+                        <strong class="text-dark d-block mb-1">Thermodynamic Spatial Consensus</strong>
+                        Unlike traditional thresholds that flag sudden spikes as faults, SkyGuard AI cross-verifies readings against neighboring stations using spatial inverse-distance weighting and physical thermodynamic laws.
+                    </div>
+                </li>
+
+                <li class="d-flex align-items-start gap-3">
+                    <div class="stat-icon-wrapper flex-shrink-0" style="width: 36px; height: 36px; background: rgba(124, 58, 237, 0.1); color: var(--accent-purple);">
+                        <i class="fa-solid fa-brain fs-6"></i>
+                    </div>
+                    <div>
+                        <strong class="text-dark d-block mb-1">Explainable AI (XAI) Diagnostics</strong>
+                        Every flagged anomaly includes natural language reasoning detailing which level of the pipeline triggered, confidence percentage, and recommended technician action.
+                    </div>
+                </li>
+
+                <li class="d-flex align-items-start gap-3">
+                    <div class="stat-icon-wrapper flex-shrink-0" style="width: 36px; height: 36px; background: rgba(5, 150, 105, 0.1); color: var(--status-healthy);">
+                        <i class="fa-solid fa-wrench fs-6"></i>
+                    </div>
+                    <div>
+                        <strong class="text-dark d-block mb-1">Automatic Data Imputation</strong>
+                        Corrupted or missing telemetry packets are automatically recovered in real-time using historical time-series interpolation and spatial kriging.
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom">
+                    <i class="fa-solid fa-landmark text-primary"></i> SIH Problem Statement & IMD Alignment
+                </h3>
+            </div>
+
+            <div class="text-secondary small leading-relaxed">
+                <p class="mb-3">
+                    <strong class="text-dark">Problem Statement ID:</strong> SIH 26073 — Development of Intelligent Anomaly Detection & Sensor Health Verification System for Automatic Weather Stations (AWS).
+                </p>
+
+                <p class="mb-3">
+                    <strong class="text-dark">Ministry / Nodal Agency:</strong> Ministry of Earth Sciences (MoES) / India Meteorological Department (IMD).
+                </p>
+
+                <p class="mb-0">
+                    <strong class="text-dark">Impact:</strong> Deployed across thousands of unmanned AWS stations in remote topographies, SkyGuard AI reduces manual inspection costs, prevents false weather alarms in public bulletins, and maintains continuous meteorological dataset continuity for climate forecasting models.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

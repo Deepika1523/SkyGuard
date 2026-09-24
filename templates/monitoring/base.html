@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkyGuard AI — IMD AWS Anomaly Detection Platform{% endblock %}</title>
+    <meta name="description" content="AI-powered AWS meteorological anomaly detection, sensor fault diagnostics, and spatial validation platform for IMD.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet GIS Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Custom Design System CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <!-- Persistent LIGHT THEME Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-cloud-sun-rain"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>SkyGuard <span style="font-size: 0.75rem; color: #2563eb; font-weight: 700;">AI</span></h1>
+                    <p>IMD AWS Sentinel</p>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="nav-section-title">MAIN</div>
+                
+                <a href="{% url 'dashboard-home' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'dashboard-home' %}active{% endif %}">
+                    <span><i class="fa-solid fa-gauge-high"></i> Dashboard</span>
+                    <span class="nav-badge">2</span>
+                </a>
+
+                <a href="{% url 'stations-list' %}" class="nav-link-custom {% if 'station' in request.resolver_match.url_name %}active{% endif %}">
+                    <span><i class="fa-solid fa-tower-cell"></i> Stations Fleet</span>
+                </a>
+
+                <a href="{% url 'anomalies-list' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'anomalies-list' %}active{% endif %}">
+                    <span><i class="fa-solid fa-triangle-exclamation"></i> Anomalies Log</span>
+                    <span class="nav-badge nav-badge-hot">Hot</span>
+                </a>
+
+                <a href="{% url 'alerts-list' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'alerts-list' %}active{% endif %}">
+                    <span><i class="fa-solid fa-bell"></i> Alerts Feed</span>
+                    <span class="nav-badge nav-badge-new" id="nav-open-alerts-count">0</span>
+                </a>
+
+                <div class="nav-section-title">COMPONENTS</div>
+
+                <a href="{% url 'upload-dataset' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'upload-dataset' %}active{% endif %}">
+                    <span><i class="fa-solid fa-cloud-arrow-up"></i> Upload Dataset</span>
+                </a>
+
+                <a href="{% url 'analytics' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+                    <span><i class="fa-solid fa-chart-line"></i> Analytics & Proof</span>
+                </a>
+
+
+                <a href="{% url 'reports' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+                    <span><i class="fa-solid fa-file-contract"></i> Audit Reports</span>
+                </a>
+
+                <div class="nav-section-title">EXTRAS</div>
+
+                <a href="{% url 'about' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+                    <span><i class="fa-solid fa-circle-info"></i> Architecture / About</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div><strong style="color: #212529;">SIH 26073</strong></div>
+                <div>IMD / Ministry of Earth Sciences</div>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper Area -->
+        <div class="main-wrapper">
+            
+            <!-- Light Header Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="topbar-toggle-btn" id="sidebar-toggle" title="Toggle Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <a href="/" class="btn-custom btn-secondary-custom d-none d-sm-inline-flex" style="border-radius: 20px; font-size: 0.8rem; font-weight: 700;">
+                        <i class="fa-solid fa-arrow-left"></i> Main Landing Page
+                    </a>
+
+                    <div class="dropdown">
+                        <button class="topbar-create-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Create <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; margin-left: 2px;"></i>
+                        </button>
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                            <li><a class="dropdown-item py-2" href="{% url 'stations-list' %}"><i class="fa-solid fa-plus text-primary me-2"></i> Register New Station</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'dashboard-home' %}"><i class="fa-solid fa-vial text-warning me-2"></i> Inject Simulation Fault</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'reports' %}"><i class="fa-solid fa-file-pdf text-danger me-2"></i> Generate Quality Report</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'alerts-list' %}"><i class="fa-solid fa-bell text-info me-2"></i> View Active Alerts</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="topbar-search-box d-none d-md-block">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search telemetry, station..." id="global-search-input">
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Language Selector -->
+                    <div class="dropdown d-none d-sm-block">
+                        <button class="btn btn-sm btn-link text-decoration-none text-dark dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown" style="font-size: 0.82rem; font-weight: 600;">
+                            <span style="font-size: 1.1rem;">🇺🇸</span> English
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li><a class="dropdown-item" href="#">🇺🇸 English</a></li>
+                            <li><a class="dropdown-item" href="#">🇮🇳 Hindi (हिंदी)</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Fullscreen Toggle -->
+                    <button class="topbar-icon-btn d-none d-sm-flex" onclick="toggleFullScreen()" title="Toggle Fullscreen">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+
+                    <!-- Notifications Dropdown -->
+                    <div class="dropdown">
+                        <button class="topbar-icon-btn" data-bs-toggle="dropdown" title="Notifications">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="topbar-icon-badge" id="topbar-badge-count">3</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0" style="width: 300px;">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top">
+                                <strong class="text-dark small">Notifications</strong>
+                                <span class="badge bg-danger rounded-pill">3 New</span>
+                            </div>
+                            <div class="list-group list-group-flush small" style="max-height: 240px; overflow-y: auto;">
+                                <a href="{% url 'alerts-list' %}" class="list-group-item list-group-item-action p-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="stat-icon-wrapper flex-shrink-0" style="width: 32px; height: 32px; background: #ffebee; color: #f44336; border-radius: 50%; font-size: 0.8rem;">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="d-block text-dark">Hardware Fault Detected</strong>
+                                            <span class="text-muted extra-small">AWS-IND-0102 Temperature Spike</span>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="{% url 'anomalies-list' %}" class="list-group-item list-group-item-action p-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="stat-icon-wrapper flex-shrink-0" style="width: 32px; height: 32px; background: #e1f5fe; color: #0288d1; border-radius: 50%; font-size: 0.8rem;">
+                                            <i class="fa-solid fa-cloud-bolt"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="d-block text-dark">Heatwave Confirmed</strong>
+                                            <span class="text-muted extra-small">Spatial consensus level 4 validated</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="p-2 border-top text-center bg-light rounded-bottom">
+                                <a href="{% url 'alerts-list' %}" class="text-primary small text-decoration-none fw-semibold">View All Notifications</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Avatar Dropdown -->
+                    <div class="dropdown">
+                        <button class="user-profile-btn dropdown-toggle" data-bs-toggle="dropdown">
+                            <div style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2bbd9e); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
+                                DM
+                            </div>
+                            <span class="user-name d-none d-md-inline">Duty Meteorologist</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+                            <li class="px-3 py-2 border-bottom">
+                                <strong class="d-block text-dark small">Duty Meteorologist</strong>
+                                <span class="text-muted extra-small">IMD Ops Command Center</span>
+                            </li>
+                            <li><a class="dropdown-item py-2" href="#"><i class="fa-solid fa-user-shield me-2 text-primary"></i> Profile Settings</a></li>
+                            <li><a class="dropdown-item py-2" href="#"><i class="fa-solid fa-sliders me-2 text-info"></i> Preferences</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="#"><i class="fa-solid fa-power-off me-2"></i> Log Out</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Settings Gear Icon -->
+                    <button class="topbar-icon-btn d-none d-sm-flex" title="System Settings">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                </div>
+
+            </header>
+
+            <!-- Page Content Block -->
+            <main class="content-container">
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- App Footer -->
+            <footer class="app-footer">
+                <div>
+                    <strong>SkyGuard AI</strong> — Autonomous AWS Telemetry Anomaly Detection & Sensor Health Platform
+                </div>
+                <div>
+                    SIH 26073 — Ministry of Earth Sciences / India Meteorological Department
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Leaflet GIS Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Shared Static JS Utilities -->
+    <script src="{% static 'js/api.js' %}"></script>
+    <script src="{% static 'js/badges.js' %}"></script>
+
+    <script>
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        async function updateNavAlertCount() {
+            try {
+                const stats = await SkyGuardAPI.get('dashboard/stats/');
+                const count = stats.active_alerts || 0;
+                const badgeEl = document.getElementById('nav-open-alerts-count');
+                const topbarBadgeEl = document.getElementById('topbar-badge-count');
+                if (badgeEl) {
+                    badgeEl.innerText = count;
+                }
+                if (topbarBadgeEl) {
+                    topbarBadgeEl.innerText = count;
+                }
+            } catch (err) {
+                console.warn("Unable to sync alert count badge:", err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNavAlertCount();
+            setInterval(updateNavAlertCount, 15000);
+
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                });
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

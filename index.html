@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyGuard AI — Smarter Monitoring for a Safer Tomorrow</title>
+    <meta name="description" content="SkyGuard AI uses advanced machine learning to detect anomalies in Automatic Weather Stations, enabling early warnings, proactive action, and stronger, more resilient communities.">
+
+    <!-- Google Fonts: Inter, Outfit, Space Grotesk, IBM Plex Mono, Caveat for handwritten script -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* === SKYGUARD AI DESIGN SYSTEM === */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --bg-deep: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-surface: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-color-strong: #0284c7;
+
+            --accent-teal: #0284c7;
+            --accent-teal-bright: #0369a1;
+            --accent-cyan: #0284c7;
+            --accent-blue: #2563eb;
+            --accent-dark-blue: #0A4D9C;
+
+            --status-healthy: #16a34a;
+            --status-healthy-bg: #dcfce7;
+            --status-warning: #d97706;
+            --status-warning-bg: #fef3c7;
+            --status-critical: #dc2626;
+            --status-critical-bg: #fee2e2;
+
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-dim: #94a3b8;
+
+            --font-heading: 'Outfit', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --font-body: 'Inter', sans-serif;
+            --font-script: 'Caveat', cursive;
+        }
+
+        /* Base Reset */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .font-mono {
+            font-family: var(--font-mono);
+        }
+
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--accent-teal-bright);
+        }
+
+        /* View Containers */
+        .view-section {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0F172A;
+        }
+
+        .nav-brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+            font-size: 1.2rem;
+        }
+
+        .nav-brand-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-brand-tagline {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.15em;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.25rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 4px 0;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #2563eb;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .theme-toggle-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            border-radius: 25px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            color: #475569;
+            cursor: pointer;
+        }
+
+        .btn-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.75rem 1.6rem;
+            border-radius: 40px;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-pill-blue {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .btn-pill-blue:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+            color: #ffffff;
+        }
+
+        .btn-pill-dark {
+            background: #0A4D9C;
+            color: #ffffff;
+        }
+
+        .btn-pill-dark:hover {
+            background: #083b78;
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        .btn-pill-video {
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .btn-pill-video:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .play-icon-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 0.8rem;
+        }
+
+        /* HERO SECTION */
+        .hero-banner {
+            position: relative;
+            min-height: 580px;
+            padding: 4rem 3rem 5rem;
+            background: url('/static/images/aws_hero.jpg') center right / cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .hero-banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 45%, rgba(255, 255, 255, 0.4) 75%, rgba(255, 255, 255, 0.1) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+        }
+
+        .hero-subtag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #2563eb;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-subtag::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: #2563eb;
+        }
+
+        .hero-title-main {
+            font-size: 3.75rem;
+            line-height: 1.1;
+            font-weight: 800;
+            color: #0F172A;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title-highlight {
+            background: linear-gradient(135deg, #2563eb 0%, #19C3E6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: #475569;
+            line-height: 1.65;
+            margin-bottom: 2.25rem;
+            max-width: 560px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        /* Floating Handwritten Script */
+        .hero-script-decor {
+            position: absolute;
+            top: 22%;
+            right: 32%;
+            z-index: 2;
+            font-family: var(--font-script);
+            font-size: 1.85rem;
+            color: #3b82f6;
+            transform: rotate(-8deg);
+            pointer-events: none;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.8);
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .hero-script-decor span {
+            display: block;
+        }
+
+        /* Floating Live Station Glass Card */
+        .floating-station-card {
+            position: absolute;
+            bottom: 3.5rem;
+            right: 4rem;
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+            width: 440px;
+        }
+
+        .glass-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: #64748b;
+            font-family: var(--font-mono);
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .glass-card-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .temp-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .weather-icon-sun {
+            font-size: 2.2rem;
+            color: #f59e0b;
+        }
+
+        .temp-val {
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            color: #0f172a;
+            line-height: 1;
+        }
+
+        .weather-status-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .sensor-metrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: #475569;
+            font-family: var(--font-mono);
+        }
+
+        .sensor-metric-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        /* SVG Wave Divider */
+        .wave-divider {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            margin-top: -1px;
+            background: #ffffff;
+        }
+
+        .wave-divider svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 60px;
+        }
+
+        /* THREE PILLARS FEATURE SECTION */
+        .pillars-section {
+            background: #ffffff;
+            padding: 3rem 3rem 4rem;
+        }
+
+        .pillars-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .pillar-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+        }
+
+        .pillar-icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .icon-box-mint {
+            background: #e6f7f3;
+            color: #10b981;
+        }
+
+        .icon-box-cyan {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .icon-box-emerald {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .pillar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .pillar-desc {
+            font-size: 0.88rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .pillars-subline {
+            text-align: center;
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #f1f5f9;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        /* SECTIONS STYLING */
+        .section-padding {
+            padding: 5rem 3rem;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #2563eb;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: #64748b;
+            margin-top: 0.75rem;
+        }
+
+        /* ABOUT GRID */
+        .about-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .stat-card-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            text-align: center;
+        }
+
+        .stat-card-val {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2563eb;
+            font-family: var(--font-heading);
+        }
+
+        .stat-card-lbl {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* FEATURES GRID */
+        .features-cards-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.75rem;
+        }
+
+        .feat-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .feat-box:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.08);
+        }
+
+        .feat-icon-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* LIVE DATA CARDS */
+        .live-stations-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.75rem;
+        }
+
+        .station-live-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* IMPACT STORIES */
+        .impact-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.75rem;
+        }
+
+        .impact-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .impact-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        /* CONTACT FORM */
+        .contact-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            margin-top: 6px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #2563eb;
+        }
+
+        /* Buttons & Utility */
+        .btn-dash {
+            padding: 0.65rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            border: none;
+            background: #2563eb;
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .btn-dash:hover {
+            background: #1d4ed8;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .hero-banner { flex-direction: column; padding: 3rem 1.5rem; }
+            .floating-station-card { position: static; width: 100%; margin-top: 2rem; }
+            .hero-script-decor { display: none; }
+            .pillars-grid, .about-grid, .features-cards-grid, .live-stations-grid, .impact-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .hero-title-main { font-size: 2.5rem; }
+            .navbar { padding: 0.85rem 1.5rem; }
+            .nav-links { display: none; }
+            .section-padding { padding: 3rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== MAIN PAGE LANDING VIEW ==================== -->
+    <div id="view-homepage" class="view-section active">
+        
+        <!-- Header Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="nav-brand-icon">
+                    <i class="fa-solid fa-cloud-sun-rain"></i>
+                </div>
+                <div class="nav-brand-title">
+                    <span>SkyGuard AI</span>
+                    <span class="nav-brand-tagline">MONITOR • DETECT • PROTECT</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#livedata">Live Data</a></li>
+                <li><a href="#impact">Impact</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="theme-toggle-pill">
+                    <i class="fa-solid fa-sun" style="color: #f59e0b;"></i>
+                    <i class="fa-solid fa-moon" style="color: #94a3b8;"></i>
+                </div>
+                <button class="btn-pill btn-pill-dark" onclick="switchView('dashboard')">
+                    Get Started <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-banner">
+            <div class="hero-banner-overlay"></div>
+
+            <!-- Left Text Content -->
+            <div class="hero-content">
+                <div class="hero-subtag">WEATHER INTELLIGENCE FOR A SAFER TOMORROW</div>
+                
+                <h1 class="hero-title-main">
+                    Smarter Monitoring<br>
+                    for a <span class="hero-title-highlight">Safer Tomorrow</span>
+                </h1>
+
+                <p class="hero-description">
+                    SkyGuard AI uses advanced machine learning to detect anomalies in Automatic Weather Stations, enabling early warnings, proactive action, and stronger, more resilient communities.
+                </p>
+
+                <div class="hero-actions">
+                    <button class="btn-pill btn-pill-blue" onclick="switchView('dashboard')">
+                        Explore Live Data <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <button class="btn-pill btn-pill-video" onclick="alert('Playing SkyGuard AI introduction video...')">
+                        <span class="play-icon-circle"><i class="fa-solid fa-play"></i></span>
+                        Watch Video
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating Cursive Script Decorator -->
+            <div class="hero-script-decor">
+                <span>Clearer Skies</span>
+                <span>Stronger Communities</span>
+            </div>
+
+            <!-- Floating Live Station Glass Card -->
+            <div class="floating-station-card">
+                <div class="glass-card-header">
+                    <span><i class="fa-solid fa-circle" style="color: #22c55e; font-size: 0.6rem;"></i> Live Station — <strong>Varanasi, UP</strong></span>
+                    <span>Last updated: 10:24 AM</span>
+                </div>
+
+                <div class="glass-card-body">
+                    <div class="temp-display">
+                        <i class="fa-solid fa-cloud-sun weather-icon-sun"></i>
+                        <div>
+                            <div class="temp-val">28.4 °C</div>
+                            <div class="weather-status-text">Partly Cloudy</div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-metrics-list">
+                        <div class="sensor-metric-row">
+                            <span><i class="fa-solid fa-droplet text-sky-500"></i> Humidity</span>
+                            <strong>62 %</strong>
+                        </div>
+                        <div class="sensor-metric-row">
+                            <span><i class="fa-solid fa-wind text-sky-500"></i> Wind Speed</span>
+                            <strong>12.6 km/h</strong>
+                        </div>
+                        <div class="sensor-metric-row">
+                            <span><i class="fa-solid fa-gauge-high text-sky-500"></i> Pressure</span>
+                            <strong>1008 hPa</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wave Transition SVG -->
+        <div class="wave-divider">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0 C150,90 350,-40 500,45 C650,130 900,10 1200,40 L1200,120 L0,120 Z" fill="#ffffff"></path>
+            </svg>
+        </div>
+
+        <!-- Bottom 3 Pillars Feature Section -->
+        <section class="pillars-section">
+            <div class="pillars-grid">
+                
+                <!-- Pillar 1 -->
+                <div class="pillar-card">
+                    <div class="pillar-icon-box icon-box-mint">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div>
+                        <h3 class="pillar-title">Detect Early</h3>
+                        <p class="pillar-desc">Identify anomalies before they become disasters.</p>
+                    </div>
+                </div>
+
+                <!-- Pillar 2 -->
+                <div class="pillar-card">
+                    <div class="pillar-icon-box icon-box-cyan">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h3 class="pillar-title">Enable Action</h3>
+                        <p class="pillar-desc">Timely alerts for smarter decisions.</p>
+                    </div>
+                </div>
+
+                <!-- Pillar 3 -->
+                <div class="pillar-card">
+                    <div class="pillar-icon-box icon-box-emerald">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+                    <div>
+                        <h3 class="pillar-title">Build Resilient Communities</h3>
+                        <p class="pillar-desc">Empowering authorities and citizens with reliable insights.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pillars-subline">
+                DATA TODAY • SAFER TOMORROW
+            </div>
+        </section>
+
+        <!-- SECTION: ABOUT -->
+        <section id="about" class="section-padding" style="background: #f8fafc;">
+            <div class="section-header">
+                <span class="section-tag">MISSION & VISION</span>
+                <h2 class="section-title">About SkyGuard AI</h2>
+                <p class="section-subtitle">
+                    Fusing Machine Learning anomaly detection with physical thermodynamic laws to safeguard meteorological networks across India.
+                </p>
+            </div>
+
+            <div class="about-grid">
+                <div style="font-size: 1.02rem; color: #475569; line-height: 1.7;">
+                    <p style="margin-bottom: 1.25rem;">
+                        Automatic Weather Stations (AWS) form the backbone of national disaster management and climate monitoring. However, hardware degradation, sensor freeze, battery drain, and packet loss often produce false readings that mask severe weather events or trigger false alarms.
+                    </p>
+                    <p style="margin-bottom: 1.5rem;">
+                        <strong>SkyGuard AI</strong> introduces a 4-level hybrid ML engine—combining physical climatological range bounds, Isolation Forest spatial clustering, and LSTM Autoencoder deep sequence residuals—to validate telemetry in real-time under 20ms latency.
+                    </p>
+                    <button class="btn-pill btn-pill-blue" onclick="switchView('dashboard')">
+                        Launch Command Center <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="stat-card-box">
+                        <div class="stat-card-val">248</div>
+                        <div class="stat-card-lbl">AWS Observatories</div>
+                    </div>
+                    <div class="stat-card-box">
+                        <div class="stat-card-val">98.7%</div>
+                        <div class="stat-card-lbl">ML Model F1-Score</div>
+                    </div>
+                    <div class="stat-card-box">
+                        <div class="stat-card-val">&lt; 20ms</div>
+                        <div class="stat-card-lbl">Socket Latency</div>
+                    </div>
+                    <div class="stat-card-box">
+                        <div class="stat-card-val">100%</div>
+                        <div class="stat-card-lbl">SHAP Explainable</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: FEATURES -->
+        <section id="features" class="section-padding" style="background: #ffffff;">
+            <div class="section-header">
+                <span class="section-tag">INTELLIGENCE SUITE</span>
+                <h2 class="section-title">Key System Features</h2>
+                <p class="section-subtitle">
+                    Engineered for high-stress disaster control operations with real-time telemetry validation.
+                </p>
+            </div>
+
+            <div class="features-cards-grid">
+                
+                <div class="feat-box">
+                    <div class="feat-icon-badge"><i class="fa-solid fa-brain"></i></div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Hybrid ML Engine</h3>
+                    <p style="font-size: 0.88rem; color: #64748b;">Isolation Forest unsupervised clustering combined with LSTM Autoencoder deep residual sequence modeling.</p>
+                </div>
+
+                <div class="feat-box">
+                    <div class="feat-icon-badge"><i class="fa-solid fa-[#0284c7] fa-atom"></i></div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Thermodynamic Physics Check</h3>
+                    <p style="font-size: 0.88rem; color: #64748b;">Cross-validates temperature, humidity, and barometric pressure against Clausius-Clapeyron physical constraints.</p>
+                </div>
+
+                <div class="feat-box">
+                    <div class="feat-icon-badge"><i class="fa-solid fa-sparkles"></i></div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">SHAP Explainable AI (XAI)</h3>
+                    <p style="font-size: 0.88rem; color: #64748b;">Provides exact percentage feature attribution breakdown explaining why a sensor reading was flagged.</p>
+                </div>
+
+                <div class="feat-box">
+                    <div class="feat-icon-badge"><i class="fa-solid fa-satellite-dish"></i></div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Low-Latency Socket.io Stream</h3>
+                    <p style="font-size: 0.88rem; color: #64748b;">Streams 1,840 telemetry readings per second with sub-20ms WebSocket response times.</p>
+                </div>
+
+                <div class="feat-box">
+                    <div class="feat-icon-badge"><i class="fa-solid fa-triangle-exclamation" style="color: #dc2626;"></i></div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Disaster Advisory Dispatch</h3>
+                    <p style="font-size: 0.88rem; color: #64748b;">One-click early warning advisory broadcast channel for State Disaster Response Forces and authorities.</p>
+                </div>
+
+                <div class="feat-box">
+                    <div class="feat-icon-badge"><i class="fa-solid fa-battery-three-quarters"></i></div>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Hardware Diagnostics</h3>
+                    <p style="font-size: 0.88rem; color: #64748b;">Monitors solar radiation charging, battery voltage drops, and 4G LTE signal RSSI levels.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: LIVE DATA -->
+        <section id="livedata" class="section-padding" style="background: #f8fafc;">
+            <div class="section-header">
+                <span class="section-tag">REAL-TIME MONITORING</span>
+                <h2 class="section-title">Live AWS Telemetry Stream</h2>
+                <p class="section-subtitle">
+                    Select any AWS station to view real-time meteorological readings and active anomaly status.
+                </p>
+            </div>
+
+            <div class="live-stations-grid">
+                
+                <div class="station-live-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div>
+                            <span style="font-size: 0.75rem; font-family: var(--font-mono); color: #0284c7; font-weight: 700;">AWS-KED-01</span>
+                            <h3 style="font-size: 1.2rem; font-weight: 700; margin-top: 2px;">Kedarnath High-Altitude AWS</h3>
+                            <p style="font-size: 0.8rem; color: #64748b;">Rudraprayag, Uttarakhand • 3,583m Elev</p>
+                        </div>
+                        <span style="padding: 4px 10px; background: #fee2e2; color: #dc2626; border-radius: 20px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: 700;">CRITICAL</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; background: #f1f5f9; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; font-family: var(--font-mono); text-align: center;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b;">RAINFALL</div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: #dc2626;">112.4 mm/h</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b;">WIND GUST</div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: #0f172a;">64.5 km/h</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b;">PRESSURE</div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: #d97706;">685.2 hPa</div>
+                        </div>
+                    </div>
+
+                    <button class="btn-dash" style="width: 100%; text-align: center;" onclick="switchView('dashboard')">
+                        Open Command Telemetry <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="station-live-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div>
+                            <span style="font-size: 0.75rem; font-family: var(--font-mono); color: #0284c7; font-weight: 700;">AWS-WAY-02</span>
+                            <h3 style="font-size: 1.2rem; font-weight: 700; margin-top: 2px;">Wayanad Ghat AWS Observatory</h3>
+                            <p style="font-size: 0.8rem; color: #64748b;">Wayanad, Kerala • 950m Elev</p>
+                        </div>
+                        <span style="padding: 4px 10px; background: #fee2e2; color: #dc2626; border-radius: 20px; font-size: 0.75rem; font-family: var(--font-mono); font-weight: 700;">CRITICAL</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; background: #f1f5f9; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; font-family: var(--font-mono); text-align: center;">
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b;">RAINFALL</div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: #dc2626;">96.0 mm/h</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b;">SOIL SAT</div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: #0f172a;">245 mm/3h</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.7rem; color: #64748b;">HEALTH</div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: #16a34a;">68.2 %</div>
+                        </div>
+                    </div>
+
+                    <button class="btn-dash" style="width: 100%; text-align: center;" onclick="switchView('dashboard')">
+                        Open Command Telemetry <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: IMPACT -->
+        <section id="impact" class="section-padding" style="background: #ffffff;">
+            <div class="section-header">
+                <span class="section-tag">DISASTER MANAGEMENT</span>
+                <h2 class="section-title">Community Impact Stories</h2>
+                <p class="section-subtitle">
+                    Real-world scenarios where SkyGuard AI enabled early action and prevented disaster loss.
+                </p>
+            </div>
+
+            <div class="impact-grid">
+                
+                <div class="impact-card">
+                    <span class="impact-tag" style="background: #fee2e2; color: #dc2626;">CLOUDBURST WARNING</span>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Mandakini Valley Evacuation</h3>
+                    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.6;">
+                        Detected an intense 112.4 mm/hr microburst rainfall spike with rapid pressure drop in Kedarnath AWS, issuing an automated level 3 early warning 45 minutes before flash flooding occurred.
+                    </p>
+                </div>
+
+                <div class="impact-card">
+                    <span class="impact-tag" style="background: #fef3c7; color: #d97706;">LANDSLIDE PRECURSOR</span>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Wayanad Soil Saturation Alert</h3>
+                    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.6;">
+                        Identified continuous 3-hour precipitation accumulation exceeding slope stability thresholds, enabling district hydrologists to deploy road closures and evacuation advisories.
+                    </p>
+                </div>
+
+                <div class="impact-card">
+                    <span class="impact-tag" style="background: #dcfce7; color: #16a34a;">FALSE ALARM FILTER</span>
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px;">Sensor Flatline Diagnostics</h3>
+                    <p style="font-size: 0.88rem; color: #64748b; line-height: 1.6;">
+                        Isolated a stuck transducer flatline on Mumbai Santacruz AWS pressure sensor, suppressing unnecessary civic panic while dispatching field maintenance engineers directly to repair the node.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: CONTACT -->
+        <section id="contact" class="section-padding" style="background: #f8fafc;">
+            <div class="section-header">
+                <span class="section-tag">CONNECT WITH OPERATIONS</span>
+                <h2 class="section-title">Disaster Command Center Contact</h2>
+                <p class="section-subtitle">
+                    Reach out to the SkyGuard Operations Bureau for integration, AWS node deployment, or emergency support.
+                </p>
+            </div>
+
+            <div class="contact-box">
+                <form id="contact-inquiry-form" onsubmit="handleContactSubmit(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Full Name</label>
+                            <input type="text" id="contact-name" required placeholder="Dr. S. Sharma" class="form-input">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Organization / Authority</label>
+                            <input type="text" id="contact-org" required placeholder="State Disaster Response Force" class="form-input">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Official Email Address</label>
+                        <input type="email" id="contact-email" required placeholder="s.sharma@sdrf.gov.in" class="form-input">
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Message / Request Details</label>
+                        <textarea id="contact-message" rows="4" required placeholder="Specify AWS station deployment coordinates or emergency integration inquiry..." class="form-input"></textarea>
+                    </div>
+
+                    <button type="submit" id="contact-submit-btn" class="btn-pill btn-pill-blue" style="width: 100%; justify-content: center;">
+                        <span>Submit Official Inquiry</span> <i class="fa-solid fa-paper-plane ms-2"></i>
+                    </button>
+                    <div id="contact-status-msg" style="margin-top: 1rem; display: none; font-size: 0.9rem;" class="text-center font-bold"></div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Command Center Quick Launcher Banner -->
+        <div class="container" style="padding-top: 1rem; padding-bottom: 4rem;">
+            <div class="card-custom" style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: #ffffff; text-align: center; padding: 2.5rem;">
+                <h2 style="font-size: 1.8rem; color: #ffffff; margin-bottom: 8px;">Access SkyGuard AI Command Center</h2>
+                <p style="font-size: 0.95rem; color: rgba(255,255,255,0.9); max-width: 600px; margin: 0 auto 1.5rem;">
+                    Monitor live AWS telemetry, simulate sensor spikes/drifts, and view 4-level hybrid ML SHAP explainability diagnostics.
+                </p>
+                <button class="btn-dash" style="background: #ffffff; color: #2563eb; font-size: 1rem; padding: 0.8rem 2rem; border-radius: 30px;" onclick="switchView('dashboard')">
+                    Launch Command Dashboard <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ==================== DASHBOARD VIEW ==================== -->
+    <div id="view-dashboard" class="view-section">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="nav-brand-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+                <span>SkyGuard AI Command Center</span>
+            </div>
+
+            <button class="btn-dash" onclick="switchView('homepage')">
+                <i class="fa-solid fa-arrow-left"></i> Back to Main Page
+            </button>
+        </nav>
+
+        <div class="container">
+            <div class="card-custom">
+                <div style="font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-tower-cell" style="color: #0284c7;"></i> IMD AWS Meteorological Sentinel Dashboard
+                </div>
+                <p style="color: #64748b; font-size: 0.9rem;">
+                  Real-time machine learning telemetry verification, cloudburst anomaly detection, and sensor calibration hub.
+                </p>
+                <div style="margin-top: 1.5rem;">
+                  <a href="/dashboard/" class="btn-dash" style="display: inline-block;">
+                    Open Full Enterprise Dashboard <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== JAVASCRIPT CONTROLLERS ==================== -->
+    <script>
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            if (viewName === 'dashboard') {
+                window.location.href = '/dashboard/';
+            } else {
+                document.getElementById('view-homepage').classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        async function handleContactSubmit(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('contact-submit-btn');
+            const statusMsg = document.getElementById('contact-status-msg');
+            
+            const name = document.getElementById('contact-name').value;
+            const org = document.getElementById('contact-org').value;
+            const email = document.getElementById('contact-email').value;
+            const message = document.getElementById('contact-message').value;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i> Dispatched to Ops Email...`;
+            statusMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/contact/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, organization: org, email, message })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    statusMsg.style.display = 'block';
+                    statusMsg.style.color = '#16a34a';
+                    statusMsg.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> ${data.message}`;
+                    document.getElementById('contact-inquiry-form').reset();
+                    alert(data.message);
+                } else {
+                    throw new Error(data.error || 'Failed to dispatch email');
+                }
+            } catch (err) {
+                statusMsg.style.display = 'block';
+                statusMsg.style.color = '#dc2626';
+                statusMsg.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-1"></i> ${err.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `Submit Official Inquiry <i class="fa-solid fa-paper-plane ms-2"></i>`;
+            }
+        }
+    </script>
+</body>
+</html>

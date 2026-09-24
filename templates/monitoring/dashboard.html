@@ -1,0 +1,702 @@
+{% extends 'monitoring/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — SkyGuard AI Command Center{% endblock %}
+{% block header_title %}IMD AWS Meteorological Command Center{% endblock %}
+
+{% block content %}
+<!-- Top Metrics Ribbon -->
+<div class="stat-grid">
+    <!-- Card 1: Stations Active -->
+    <div class="stat-card-teal">
+        <div>
+            <div class="stat-card-label">STATIONS ACTIVE</div>
+            <div class="stat-card-value" id="stat-total-stations">{{ stats.total }}</div>
+            <div class="stat-card-badge">
+                <i class="fa-solid fa-arrow-up"></i> +100% Operational
+            </div>
+        </div>
+        <div class="stat-card-icon-wrapper">
+            <i class="fa-solid fa-tower-cell"></i>
+        </div>
+    </div>
+
+    <!-- Card 2: Active Fault Alerts -->
+    <div class="stat-card-teal">
+        <div>
+            <div class="stat-card-label">ACTIVE ALERTS</div>
+            <div class="stat-card-value" id="stat-alerts">{{ stats.alert_count }}</div>
+            <div class="stat-card-badge">
+                <i class="fa-solid fa-triangle-exclamation"></i> Active Monitoring
+            </div>
+        </div>
+        <div class="stat-card-icon-wrapper">
+            <i class="fa-solid fa-bell"></i>
+        </div>
+    </div>
+
+    <!-- Card 3: Network Health Index -->
+    <div class="stat-card-teal">
+        <div>
+            <div class="stat-card-label">AVERAGE HEALTH</div>
+            <div class="stat-card-value" id="stat-health">{{ stats.avg_health }}%</div>
+            <div class="stat-card-badge">
+                <i class="fa-solid fa-check"></i> 0% False Alarms
+            </div>
+        </div>
+        <div class="stat-card-icon-wrapper">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+    </div>
+
+    <!-- Card 4: Anomalies Detected -->
+    <div class="stat-card-teal">
+        <div>
+            <div class="stat-card-label">ANOMALIES DETECTED</div>
+            <div class="stat-card-value">124</div>
+            <div class="stat-card-badge">
+                <i class="fa-solid fa-brain"></i> 4-Level AI Active
+            </div>
+        </div>
+        <div class="stat-card-icon-wrapper">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Simulator Control Bar -->
+<div class="card-custom">
+    <div class="card-title-custom">
+        <i class="fa-solid fa-vial-circle-check"></i> Live Anomaly & Weather Event Simulator
+    </div>
+    <p style="font-size: 0.84rem; color: var(--text-muted);" class="mt-1 mb-3">
+        Inject synthetic faults (Spikes, Frozen flatline, Monotonic drift, Null missing gap, or Regional Heatwave) to evaluate real-time 4-level AI classification & XAI diagnostics.
+    </p>
+
+    <div class="row g-3 align-items-center">
+        <div class="col-md-3">
+            <select class="form-select-custom w-100" id="sim-station">
+                {% for st in stations %}
+                <option value="{{ st.station_id }}">{{ st.station_id }} — {{ st.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select-custom w-100" id="sim-fault">
+                <option value="SPIKE">Single-Reading Sensor Spike</option>
+                <option value="FROZEN">Frozen / Flatline Sensor</option>
+                <option value="DRIFT">Monotonic Sensor Drift</option>
+                <option value="MISSING_DATA">Missing Telemetry Gap (Null)</option>
+                <option value="HEATWAVE">Regional Extreme Heatwave (Network-Wide)</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select-custom w-100" id="sim-param">
+                <option value="temperature">Temperature Sensor</option>
+                <option value="humidity">Humidity Sensor</option>
+                <option value="pressure">Pressure Sensor</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button class="btn-custom btn-primary-custom flex-grow-1" onclick="triggerSimulation()">
+                <i class="fa-solid fa-bolt"></i> Inject Fault
+            </button>
+            <button class="btn-custom btn-danger-custom" title="Inject Heatwave" onclick="triggerHeatwave()">
+                <i class="fa-solid fa-temperature-arrow-up"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 3-Column Meteorological Intelligence Charts Grid -->
+<div class="row g-4 mb-4">
+    <!-- Donut Chart Widget: Sensor Fleet Health Ratio -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="card-custom h-100 mb-0 d-flex flex-column justify-content-between">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom"><i class="fa-solid fa-pie-chart text-teal"></i> Sensor Fleet Health Ratio</h3>
+            </div>
+            
+            <div class="row text-center mb-3">
+                <div class="col-6">
+                    <h4 class="font-heading fs-5 text-dark fw-bold mb-0">98.4%</h4>
+                    <span class="text-muted extra-small">Fleet Health Index</span>
+                </div>
+                <div class="col-6">
+                    <h4 class="font-heading fs-5 text-dark fw-bold mb-0">0.0%</h4>
+                    <span class="text-muted extra-small">False Hardware Alarms</span>
+                </div>
+            </div>
+
+            <div style="position: relative; height: 210px; width: 100%;">
+                <canvas id="sensorHealthDonutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Area Chart Widget: Telemetry Volume & Imputation Trend -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="card-custom h-100 mb-0 d-flex flex-column justify-content-between">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom"><i class="fa-solid fa-chart-area text-indigo"></i> Telemetry Data Volume</h3>
+            </div>
+
+            <div class="row text-center mb-3">
+                <div class="col-4">
+                    <h5 class="font-heading fs-6 text-dark fw-bold mb-0">10,480</h5>
+                    <span class="text-muted extra-small">Observed</span>
+                </div>
+                <div class="col-4">
+                    <h5 class="font-heading fs-6 text-dark fw-bold mb-0">124</h5>
+                    <span class="text-muted extra-small">Imputed</span>
+                </div>
+                <div class="col-4">
+                    <h5 class="font-heading fs-6 text-dark fw-bold mb-0">99.8%</h5>
+                    <span class="text-muted extra-small">Uptime</span>
+                </div>
+            </div>
+
+            <div style="position: relative; height: 210px; width: 100%;">
+                <canvas id="telemetryVolumeAreaChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bar Chart Widget: Anomaly Classification Breakdown -->
+    <div class="col-xl-4 col-lg-12">
+        <div class="card-custom h-100 mb-0 d-flex flex-column justify-content-between">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom"><i class="fa-solid fa-chart-bar text-purple"></i> Anomaly Breakdown</h3>
+            </div>
+
+            <div class="row text-center mb-3">
+                <div class="col-6">
+                    <h4 class="font-heading fs-5 text-dark fw-bold mb-0">78</h4>
+                    <span class="text-muted extra-small">Genuine Weather</span>
+                </div>
+                <div class="col-6">
+                    <h4 class="font-heading fs-5 text-dark fw-bold mb-0">46</h4>
+                    <span class="text-muted extra-small">Sensor Faults</span>
+                </div>
+            </div>
+
+            <div style="position: relative; height: 210px; width: 100%;">
+                <canvas id="anomalyBreakdownBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Grid: Map & Live Telemetry -->
+<div class="row g-4 mb-4">
+    
+    <!-- Left Column: Map & Station List -->
+    <div class="col-xl-6">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom">
+                    <i class="fa-solid fa-map-location-dot"></i> IMD AWS GIS Network Map
+                </h3>
+                <span class="badge bg-light text-secondary border">Delhi / NCR Region</span>
+            </div>
+            
+            <div id="map" style="height: 340px; width: 100%; border-radius: 8px; border: 1px solid var(--bg-card-border);"></div>
+
+            <div class="mt-3">
+                <h4 class="card-title-custom mb-2" style="font-size: 0.95rem;">
+                    <i class="fa-solid fa-list-check"></i> AWS Fleet Health Matrix
+                </h4>
+                <div class="table-responsive-custom">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Station ID</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Elevation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for st in stations %}
+                            <tr style="cursor: pointer;" onclick="selectStation('{{ st.station_id }}')">
+                                <td style="font-weight: 600; color: var(--accent-teal);">
+                                    <a href="{% url 'station-detail' st.station_id %}" class="fw-bold">
+                                        {{ st.station_id }}
+                                    </a>
+                                </td>
+                                <td class="fw-semibold text-dark">{{ st.name }}</td>
+                                <td>
+                                    <span id="st-badge-{{ st.station_id }}">
+                                        {% if st.status == 'ACTIVE' %}
+                                        <span class="sg-badge sg-badge-active"><i class="fa-solid fa-tower-cell"></i> Active</span>
+                                        {% elif st.status == 'WARNING' %}
+                                        <span class="sg-badge sg-badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Warning</span>
+                                        {% else %}
+                                        <span class="sg-badge sg-badge-critical"><i class="fa-solid fa-skull-crossbones"></i> Critical</span>
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td class="text-secondary">{{ st.elevation }} m</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Live Chart & XAI Diagnostic -->
+    <div class="col-xl-6">
+        <div class="card-custom h-100 mb-0 d-flex flex-column justify-content-between">
+            <div>
+                <div class="card-header-custom">
+                    <h3 class="card-title-custom">
+                        <i class="fa-solid fa-chart-line"></i> Live Telemetry & Imputation
+                    </h3>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-secondary-custom active chart-param-btn" onclick="setChartParam('temperature', this)">Temp (°C)</button>
+                        <button class="btn btn-secondary-custom chart-param-btn" onclick="setChartParam('humidity', this)">Humidity (%)</button>
+                        <button class="btn btn-secondary-custom chart-param-btn" onclick="setChartParam('pressure', this)">Pressure (hPa)</button>
+                    </div>
+                </div>
+
+                <div style="position: relative; height: 260px; width: 100%;">
+                    <canvas id="telemetryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- XAI Diagnostic Panel -->
+            <div class="mt-3 p-3" style="background: #f8fafc; border: 1px solid #e9ecef; border-radius: 8px;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-brain" style="color: var(--accent-teal); font-size: 1.1rem;"></i>
+                        <strong style="font-size: 0.95rem;" class="text-dark">Explainable AI (XAI) Diagnostic</strong>
+                    </div>
+                    <span class="sg-badge sg-badge-weather" id="xai-confidence">Confidence: 96%</span>
+                </div>
+
+                <div id="xai-text" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">
+                    Select a station or inject a fault to view 4-Level AI diagnostic breakdown and spatial consistency analysis.
+                </div>
+
+                <div class="mt-2 p-2 rounded" style="background: #fff8e1; border-left: 3px solid var(--status-warning); font-size: 0.82rem; color: #92400e;" id="xai-action">
+                    <strong>Recommended Action:</strong> System monitoring active. No critical hardware fault detected.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Lower Section: Activity Log & Real-Time Alerts Feed -->
+<div class="row g-4">
+    <!-- AWS System Activity Log -->
+    <div class="col-xl-5">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom">
+                    <i class="fa-solid fa-clock-rotate-left"></i> AWS Operations Log
+                </h3>
+            </div>
+
+            <ul class="activity-list mt-2">
+                <li class="activity-item">
+                    <div class="activity-dot" style="background: #2bbd9e;"></div>
+                    <span class="activity-date">TODAY</span>
+                    <p class="activity-text">
+                        <strong>AWS-IND-0101 Humidity Calibration</strong><br>
+                        <span class="text-muted extra-small">Checked and verified by Duty Meteorologist.</span>
+                    </p>
+                </li>
+
+                <li class="activity-item">
+                    <div class="activity-dot" style="background: #5c6bc0;"></div>
+                    <span class="activity-date">YESTERDAY</span>
+                    <p class="activity-text">
+                        <strong>Level 4 Spatial Consensus Check Passed</strong><br>
+                        <span class="text-muted extra-small">98.4% spatial correlation across Delhi NCR network.</span>
+                    </p>
+                </li>
+
+                <li class="activity-item">
+                    <div class="activity-dot" style="background: #ff9800;"></div>
+                    <span class="activity-date">SEP 15</span>
+                    <p class="activity-text">
+                        <strong>Regional Heatwave Dispatched</strong><br>
+                        <span class="text-muted extra-small">Spatial consensus level 4 validated, zero false hardware alarms.</span>
+                    </p>
+                </li>
+
+                <li class="activity-item">
+                    <div class="activity-dot" style="background: #ab47bc;"></div>
+                    <span class="activity-date">SEP 14</span>
+                    <p class="activity-text">
+                        <strong>Data Imputation Recovery</strong><br>
+                        <span class="text-muted extra-small">Recovered 12 telemetry missing gaps via spatial Kriging.</span>
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Active Alerts Feed Table -->
+    <div class="col-xl-7">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h3 class="card-title-custom">
+                    <i class="fa-solid fa-bell"></i> Real-Time Active Alert Feed
+                </h3>
+                <a href="{% url 'alerts-list' %}" class="btn btn-sm btn-secondary-custom">View All Alerts <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <div class="table-responsive-custom">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Alert ID</th>
+                            <th>Station</th>
+                            <th>Severity</th>
+                            <th>Diagnostic Message</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alert-feed-body">
+                        {% for alert in active_alerts %}
+                        <tr>
+                            <td style="font-weight: 600; color: var(--accent-teal);">#{{ alert.id }}</td>
+                            <td>
+                                <a href="{% url 'station-detail' alert.anomaly.station.station_id %}" class="fw-bold text-dark">
+                                    {{ alert.anomaly.station.station_id }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if alert.severity == 'CRITICAL' %}
+                                <span class="sg-badge sg-badge-critical"><i class="fa-solid fa-radiation"></i> CRITICAL</span>
+                                {% elif alert.severity == 'HIGH' %}
+                                <span class="sg-badge sg-badge-critical"><i class="fa-solid fa-triangle-exclamation"></i> HIGH</span>
+                                {% else %}
+                                <span class="sg-badge sg-badge-warning"><i class="fa-solid fa-circle-exclamation"></i> MEDIUM</span>
+                                {% endif %}
+                            </td>
+                            <td style="max-width: 300px; font-size: 0.82rem;" class="text-secondary">{{ alert.message }}</td>
+                            <td>
+                                <span class="sg-badge sg-badge-critical"><i class="fa-solid fa-bell"></i> {{ alert.status }}</span>
+                            </td>
+                            <td>
+                                <button class="btn-custom btn-secondary-custom btn-sm-custom" onclick="acknowledgeAlert({{ alert.id }})">Ack</button>
+                                <button class="btn-custom btn-primary-custom btn-sm-custom" onclick="resolveAlert({{ alert.id }})">Resolve</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No active critical alerts in system. All stations operational.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let map, telemetryChart;
+    let sensorHealthDonutChart, telemetryVolumeAreaChart, anomalyBreakdownBarChart;
+    let selectedStationId = '{{ stations.0.station_id }}';
+    let currentParam = 'temperature';
+
+    const stationLocations = [
+        {% for st in stations %}
+        { id: '{{ st.station_id }}', name: '{{ st.name }}', lat: {{ st.latitude }}, lon: {{ st.longitude }}, status: '{{ st.status }}' },
+        {% endfor %}
+    ];
+
+    function initIntelligenceCharts() {
+        // 1. Donut Chart: Sensor Fleet Health Ratio
+        const ctxDonut = document.getElementById('sensorHealthDonutChart').getContext('2d');
+        sensorHealthDonutChart = new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active / Healthy (>80%)', 'Warning / Degraded (50-80%)', 'Critical (<50%)'],
+                datasets: [{
+                    data: [80, 15, 5],
+                    backgroundColor: ['#2bbd9e', '#ff9800', '#f44336'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                }
+            }
+        });
+
+        // 2. Area Chart: Telemetry Volume & Imputation Trend
+        const ctxArea = document.getElementById('telemetryVolumeAreaChart').getContext('2d');
+        telemetryVolumeAreaChart = new Chart(ctxArea, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                datasets: [
+                    {
+                        label: 'Raw Telemetry Packets',
+                        data: [1200, 1450, 1800, 2400, 2100, 1950],
+                        borderColor: '#5c6bc0',
+                        backgroundColor: 'rgba(92, 107, 192, 0.35)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Recovered / Imputed Packets',
+                        data: [15, 22, 18, 35, 20, 14],
+                        borderColor: '#2bbd9e',
+                        backgroundColor: 'rgba(43, 189, 158, 0.35)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: '#f1f5f9' } }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                }
+            }
+        });
+
+        // 3. Grouped Bar Chart: Anomaly Classification Breakdown
+        const ctxBar = document.getElementById('anomalyBreakdownBarChart').getContext('2d');
+        anomalyBreakdownBarChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Temp', 'Humidity', 'Pressure', 'Wind', 'Rainfall'],
+                datasets: [
+                    {
+                        label: 'Genuine Weather',
+                        data: [45, 25, 30, 60, 40],
+                        backgroundColor: '#29b6f6',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Sensor Faults',
+                        data: [12, 18, 8, 15, 10],
+                        backgroundColor: '#ff9800',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: '#f1f5f9' } }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    function initMap() {
+        map = L.map('map').setView([28.6139, 77.2090], 10);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            maxZoom: 18
+        }).addTo(map);
+
+        stationLocations.forEach(st => {
+            const badge = SkyGuardBadges.getStationStatus(st.status);
+            const marker = L.circleMarker([st.lat, st.lon], {
+                radius: 9,
+                fillColor: badge.color,
+                color: '#ffffff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.85
+            }).addTo(map);
+
+            marker.bindPopup(`
+                <div style="font-family: var(--font-body); padding: 4px;">
+                    <strong style="font-size: 0.95rem; color: #212529;">${st.id}</strong><br>
+                    <span style="font-size: 0.85rem; color: #495057;">${st.name}</span><br>
+                    <span style="display:inline-block; margin-top:4px; font-size: 0.82rem;">Status: <b style="color: ${badge.color}">${st.status}</b></span><br>
+                    <a href="/stations/${st.id}/" style="display:inline-block; margin-top:6px; font-size:0.8rem; color:#2bbd9e; font-weight: 600;">View Details &rarr;</a>
+                </div>
+            `);
+            marker.on('click', () => selectStation(st.id));
+        });
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('telemetryChart').getContext('2d');
+        telemetryChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Raw Observed Telemetry',
+                        data: [],
+                        borderColor: '#2bbd9e',
+                        backgroundColor: 'rgba(43, 189, 158, 0.08)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 3
+                    },
+                    {
+                        label: 'Recovered / Imputed Value',
+                        data: [],
+                        borderColor: '#7c3aed',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 4,
+                        pointStyle: 'rectRot'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: { color: '#e9ecef' },
+                        ticks: { color: '#8796a8', font: { size: 11 } }
+                    },
+                    y: {
+                        grid: { color: '#e9ecef' },
+                        ticks: { color: '#8796a8', font: { size: 11 } }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#212529', font: { size: 12 } } }
+                }
+            }
+        });
+    }
+
+    function setChartParam(param, btn) {
+        currentParam = param;
+        document.querySelectorAll('.chart-param-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        loadStationTelemetry(selectedStationId);
+    }
+
+    function selectStation(stationId) {
+        selectedStationId = stationId;
+        const select = document.getElementById('sim-station');
+        if (select) select.value = stationId;
+        loadStationTelemetry(stationId);
+    }
+
+    async function loadStationTelemetry(stationId) {
+        try {
+            const readings = await SkyGuardAPI.get(`readings/?station_id=${stationId}&limit=40`);
+            readings.reverse();
+
+            const labels = readings.map(r => new Date(r.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+            const rawData = readings.map(r => r[currentParam]);
+            const impData = readings.map(r => r[`imputed_${currentParam}`] !== null ? r[`imputed_${currentParam}`] : r[currentParam]);
+
+            telemetryChart.data.labels = labels;
+            telemetryChart.data.datasets[0].data = rawData;
+            telemetryChart.data.datasets[1].data = impData;
+            telemetryChart.update();
+
+            const anomalies = await SkyGuardAPI.get(`anomalies/?station_id=${stationId}`);
+            if (anomalies && anomalies.length > 0) {
+                const latest = anomalies[0];
+                document.getElementById('xai-text').innerHTML = latest.explanation ? latest.explanation.replace(/\n/g, '<br>') : "Nominal telemetry.";
+                document.getElementById('xai-action').innerHTML = `<strong>Recommended Action:</strong> ${latest.recommended_action || 'Regular operation.'}`;
+                document.getElementById('xai-confidence').innerText = `Confidence: ${(latest.confidence * 100).toFixed(0)}%`;
+            }
+        } catch (err) {
+            console.error("Error fetching station telemetry:", err);
+        }
+    }
+
+    async function triggerSimulation() {
+        const stId = document.getElementById('sim-station').value;
+        const fault = document.getElementById('sim-fault').value;
+        const param = document.getElementById('sim-param').value;
+
+        try {
+            const data = await SkyGuardAPI.post('simulator/inject/', { station_id: stId, fault_type: fault, parameter: param });
+            alert(`Simulation Executed!\n${data.message}\nClassification: ${data.classification} (${data.fault_type})`);
+            loadStationTelemetry(stId);
+            refreshDashboardStats();
+        } catch (err) {
+            alert("Simulation failed: " + err.message);
+        }
+    }
+
+    async function triggerHeatwave() {
+        try {
+            const data = await SkyGuardAPI.post('simulator/inject/', { fault_type: 'HEATWAVE' });
+            alert(`Regional Heatwave Injected!\n${data.message}\nStations Affected: ${data.stations_affected}`);
+            loadStationTelemetry(selectedStationId);
+            refreshDashboardStats();
+        } catch (err) {
+            alert("Heatwave simulation failed: " + err.message);
+        }
+    }
+
+    async function acknowledgeAlert(alertId) {
+        try {
+            await SkyGuardAPI.post(`alerts/${alertId}/acknowledge/`);
+            refreshDashboardStats();
+            location.reload();
+        } catch (err) {
+            alert("Action failed: " + err.message);
+        }
+    }
+
+    async function resolveAlert(alertId) {
+        try {
+            await SkyGuardAPI.post(`alerts/${alertId}/resolve/`);
+            refreshDashboardStats();
+            location.reload();
+        } catch (err) {
+            alert("Action failed: " + err.message);
+        }
+    }
+
+    async function refreshDashboardStats() {
+        try {
+            const stats = await SkyGuardAPI.get('dashboard/stats/');
+            document.getElementById('stat-total-stations').innerText = stats.total_stations;
+            document.getElementById('stat-alerts').innerText = stats.active_alerts;
+            document.getElementById('stat-health').innerText = `${stats.system_health_index}%`;
+        } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initIntelligenceCharts();
+        initMap();
+        initChart();
+        loadStationTelemetry(selectedStationId);
+    });
+</script>
+{% endblock %}

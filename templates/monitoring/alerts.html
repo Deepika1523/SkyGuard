@@ -1,0 +1,161 @@
+{% extends 'monitoring/base.html' %}
+{% load static %}
+
+{% block title %}Alerts Feed — SkyGuard AI{% endblock %}
+{% block header_title %}Operational Alert Feed & Dispatch Center{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+        <h3 class="font-heading fs-4 mb-1 text-dark">Active Hardware & Weather Alert Center</h3>
+        <p class="text-muted small mb-0">Prioritized alert dispatch stream requiring operator acknowledgment and maintenance routing.</p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        <select class="form-select-custom" id="alert-status-filter" onchange="loadAlerts()">
+            <option value="ALL">All Alert Statuses</option>
+            <option value="ACTIVE" selected>Active / Open Only</option>
+            <option value="ACKNOWLEDGED">Acknowledged Only</option>
+            <option value="RESOLVED">Resolved Only</option>
+        </select>
+        <button class="btn-custom btn-secondary-custom" onclick="loadAlerts()">
+            <i class="fa-solid fa-rotate me-1"></i> Refresh Feed
+        </button>
+    </div>
+</div>
+
+<!-- Alert Stream Grid -->
+<div class="row g-4" id="alerts-container">
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="fa-solid fa-spinner fa-spin fs-2 mb-2"></i>
+        <p>Fetching active alert feed...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadAlerts() {
+        const container = document.getElementById('alerts-container');
+        container.innerHTML = `
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="fa-solid fa-spinner fa-spin fs-2 mb-2"></i>
+                <p>Fetching alerts...</p>
+            </div>
+        `;
+
+        const filterStatus = document.getElementById('alert-status-filter').value;
+
+        try {
+            let alerts = await SkyGuardAPI.get('alerts/');
+            if (alerts && alerts.results && Array.isArray(alerts.results)) {
+                alerts = alerts.results;
+            }
+            if (!alerts || !Array.isArray(alerts)) {
+                alerts = [];
+            }
+            let filtered = alerts;
+            if (filterStatus !== 'ALL') {
+                filtered = alerts.filter(a => a.status === filterStatus);
+            }
+
+            if (!filtered || filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="card-custom text-center py-5 text-muted">
+                            <i class="fa-solid fa-circle-check fs-1 text-success mb-3"></i>
+                            <h5 class="text-dark">No Alerts Matching Filter</h5>
+                            <p class="small mb-0">All AWS telemetry operating within nominal bounds.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(alert => {
+                const dateStr = new Date(alert.created_at).toLocaleString([], {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                const sevBadge = SkyGuardBadges.renderSeverity(alert.severity);
+                const statusBadge = SkyGuardBadges.renderAlertStatus(alert.status);
+
+                return `
+                    <div class="col-lg-6">
+                        <div class="card-custom card-custom-hover h-100 mb-0 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fs-6 font-monospace text-primary fw-bold">#${alert.id}</span>
+                                        ${sevBadge}
+                                    </div>
+                                    <div>
+                                        ${statusBadge}
+                                    </div>
+                                </div>
+
+                                <h5 class="font-heading text-dark fs-6 mb-2">
+                                    <a href="/stations/${alert.station_id}/" class="text-decoration-none text-dark fw-bold">
+                                        <i class="fa-solid fa-tower-cell me-1 text-primary"></i> ${alert.station_name} (${alert.station_id})
+                                    </a>
+                                </h5>
+
+                                <p class="text-secondary small mb-3">${alert.message}</p>
+                            </div>
+
+                            <div>
+                                <div class="row g-2 extra-small text-muted border-top border-bottom border-light py-2 mb-3">
+                                    <div class="col-6">Fault: <strong class="text-dark">${alert.fault_type || 'FAULT'}</strong></div>
+                                    <div class="col-6 text-end">Raised: <strong class="text-secondary">${dateStr}</strong></div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <div class="small">
+                                        ${alert.status === 'ACTIVE' ? `
+                                            <button class="btn-custom btn-secondary-custom btn-sm-custom" onclick="updateAlertStatus(${alert.id}, 'acknowledge')">
+                                                <i class="fa-solid fa-eye me-1"></i> Acknowledge
+                                            </button>
+                                            <button class="btn-custom btn-primary-custom btn-sm-custom" onclick="updateAlertStatus(${alert.id}, 'resolve')">
+                                                <i class="fa-solid fa-check me-1"></i> Resolve
+                                            </button>
+                                        ` : alert.status === 'ACKNOWLEDGED' ? `
+                                            <button class="btn-custom btn-primary-custom btn-sm-custom" onclick="updateAlertStatus(${alert.id}, 'resolve')">
+                                                <i class="fa-solid fa-check me-1"></i> Resolve Alert
+                                            </button>
+                                        ` : `
+                                            <span class="text-success small fw-semibold"><i class="fa-solid fa-check-double me-1"></i> Resolved & Archived</span>
+                                        `}
+                                    </div>
+
+                                    <a href="/stations/${alert.station_id}/" class="text-primary small text-decoration-none fw-semibold">
+                                        View Station <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="card-custom text-center py-4 text-danger">
+                        Error fetching alert feed: ${err.message}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    async function updateAlertStatus(alertId, action) {
+        try {
+            await SkyGuardAPI.post(`alerts/${alertId}/${action}/`);
+            updateNavAlertCount();
+            loadAlerts();
+        } catch (err) {
+            alert(`Failed to ${action} alert: ${err.message}`);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAlerts);
+</script>
+{% endblock %}

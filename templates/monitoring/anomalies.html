@@ -1,0 +1,220 @@
+{% extends 'monitoring/base.html' %}
+{% load static %}
+
+{% block title %}Anomalies Log — SkyGuard AI{% endblock %}
+{% block header_title %}System-Wide Anomaly Detection Log{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+        <h3 class="font-heading fs-4 mb-1 text-dark">AWS Anomaly Log & Explainability Engine</h3>
+        <p class="text-muted small mb-0">Multi-level cross-validation log distinguishing genuine extreme weather from sensor hardware faults.</p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <select class="form-select-custom" id="filter-station" onchange="loadAnomalies()">
+            <option value="">All Stations</option>
+            {% for st in stations %}
+            <option value="{{ st.station_id }}">{{ st.station_id }} ({{ st.name }})</option>
+            {% endfor %}
+        </select>
+
+        <select class="form-select-custom" id="filter-classification" onchange="loadAnomalies()">
+            <option value="">All Classifications</option>
+            <option value="GENUINE_WEATHER_EVENT">Genuine Extreme Weather</option>
+            <option value="SENSOR_FAULT">Sensor Hardware Fault</option>
+            <option value="DATA_ISSUE">Data Transmission Issue</option>
+            <option value="NORMAL">Normal Weather Pattern</option>
+        </select>
+
+        <select class="form-select-custom" id="filter-severity" onchange="loadAnomalies()">
+            <option value="">All Severities</option>
+            <option value="CRITICAL">Critical</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+        </select>
+
+        <button class="btn-custom btn-secondary-custom" onclick="loadAnomalies()">
+            <i class="fa-solid fa-filter"></i> Apply
+        </button>
+    </div>
+</div>
+
+<!-- Anomaly Table Container -->
+<div class="card-custom">
+    <div class="table-responsive-custom">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Station</th>
+                    <th>Parameter</th>
+                    <th>Classification</th>
+                    <th>Fault Type</th>
+                    <th>Severity</th>
+                    <th>Confidence</th>
+                    <th>Actions / Expand</th>
+                </tr>
+            </thead>
+            <tbody id="anomalies-table-body">
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                        <i class="fa-solid fa-spinner fa-spin me-2"></i> Loading anomaly detection logs...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadAnomalies() {
+        const tbody = document.getElementById('anomalies-table-body');
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i> Loading anomalies...</td></tr>`;
+
+        const station = document.getElementById('filter-station').value;
+        const classification = document.getElementById('filter-classification').value;
+        const severity = document.getElementById('filter-severity').value;
+
+        const params = {};
+        if (station) params.station_id = station;
+        if (classification) params.classification = classification;
+        if (severity) params.severity = severity;
+
+        try {
+            let anomalies = await SkyGuardAPI.get('anomalies/', params);
+            if (anomalies && anomalies.results && Array.isArray(anomalies.results)) {
+                anomalies = anomalies.results;
+            }
+            if (!anomalies || !Array.isArray(anomalies) || anomalies.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No anomalies match the selected filters.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = anomalies.map(anom => {
+                const dateStr = new Date(anom.detected_at).toLocaleString([], {
+                    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+                const clsBadge = SkyGuardBadges.renderClassification(anom.classification);
+                const sevBadge = SkyGuardBadges.renderSeverity(anom.severity);
+                const confPercent = Math.round(anom.confidence * 100);
+
+                let l1Color = 'green', l2Color = 'green', l3Color = 'green', l4Color = 'green';
+                if (anom.classification === 'SENSOR_FAULT') {
+                    l1Color = 'red'; l2Color = 'red'; l4Color = 'red';
+                } else if (anom.classification === 'GENUINE_WEATHER_EVENT') {
+                    l1Color = 'yellow'; l2Color = 'yellow'; l3Color = 'green'; l4Color = 'green';
+                } else if (anom.classification === 'DATA_ISSUE') {
+                    l1Color = 'red'; l2Color = 'yellow';
+                }
+
+                return `
+                    <tr style="cursor: pointer;">
+                        <td class="text-muted font-monospace small">${dateStr}</td>
+                        <td class="fw-semibold text-dark">
+                            <a href="/stations/${anom.station}/" class="text-decoration-none text-primary">
+                                ${anom.station_name || anom.station}
+                            </a>
+                        </td>
+                        <td class="fw-semibold text-secondary">${anom.parameter}</td>
+                        <td>${clsBadge}</td>
+                        <td class="fw-semibold text-dark">${anom.fault_type}</td>
+                        <td>${sevBadge}</td>
+                        <td class="fw-bold text-dark">${confPercent}%</td>
+                        <td>
+                            <button class="btn-custom btn-secondary-custom btn-sm-custom" type="button" data-bs-toggle="collapse" data-bs-target="#anom-row-${anom.id}">
+                                Explain <i class="fa-solid fa-chevron-down ms-1"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="anom-row-${anom.id}">
+                        <td colspan="8" class="p-0">
+                            <div class="p-3 my-2 rounded border" style="background: #f8fafc; border-color: #cbd5e1 !important;">
+                                
+                                <!-- Contributing Signal Breakdown Strip -->
+                                <div class="d-flex align-items-center gap-4 mb-3 pb-2 border-bottom border-light flex-wrap">
+                                    <strong class="text-dark small"><i class="fa-solid fa-sliders text-primary me-1"></i> 4-Level Signal Matrix:</strong>
+                                    
+                                    <div class="d-flex align-items-center gap-2 small">
+                                        <span class="signal-dot signal-dot-${l1Color}"></span>
+                                        <span class="text-muted">Level 1 QC Range</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 small">
+                                        <span class="signal-dot signal-dot-${l2Color}"></span>
+                                        <span class="text-muted">Level 2 Isolation Forest</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 small">
+                                        <span class="signal-dot signal-dot-${l3Color}"></span>
+                                        <span class="text-muted">Level 3 Thermodynamics</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 small">
+                                        <span class="signal-dot signal-dot-${l4Color}"></span>
+                                        <span class="text-muted">Level 4 Spatial Consensus</span>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-8">
+                                        <h6 class="text-primary font-heading mb-1"><i class="fa-solid fa-brain me-1"></i> Diagnostic Reasoning</h6>
+                                        <p class="text-secondary small mb-2" style="white-space: pre-line;">${anom.explanation}</p>
+                                        
+                                        <div class="p-2 rounded bg-white border-start border-warning border-3 text-dark small shadow-sm">
+                                            <strong>Recommended Action:</strong> ${anom.recommended_action || 'Inspect AWS telemetry.'}
+                                        </div>
+                                    </div>
+
+                                    <!-- Operator Feedback Controls -->
+                                    <div class="col-md-4 border-start border-light ps-3">
+                                        <h6 class="text-dark font-heading mb-2"><i class="fa-solid fa-user-check text-success me-1"></i> Meteorologist Verification</h6>
+                                        <div id="feedback-actions-${anom.id}">
+                                            <div class="d-grid gap-2">
+                                                <button class="btn-custom btn-secondary-custom btn-sm-custom text-start" onclick="submitOperatorFeedback(${anom.id}, 'CONFIRMED_WEATHER')">
+                                                    <i class="fa-solid fa-cloud-bolt text-primary me-2"></i> Confirm Genuine Weather
+                                                </button>
+                                                <button class="btn-custom btn-secondary-custom btn-sm-custom text-start" onclick="submitOperatorFeedback(${anom.id}, 'CONFIRMED_FAULT')">
+                                                    <i class="fa-solid fa-wrench text-warning me-2"></i> Confirm Sensor Fault
+                                                </button>
+                                                <button class="btn-custom btn-danger-custom btn-sm-custom text-start" onclick="submitOperatorFeedback(${anom.id}, 'REJECTED')">
+                                                    <i class="fa-solid fa-xmark me-2"></i> Reject (False Alarm)
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">Error loading anomalies: ${err.message}</td></tr>`;
+        }
+    }
+
+    async function submitOperatorFeedback(anomalyId, decision) {
+        const actionBox = document.getElementById(`feedback-actions-${anomalyId}`);
+        try {
+            await SkyGuardAPI.post('feedback/', {
+                anomaly: anomalyId,
+                decision: decision,
+                comment: `Verified by Duty Meteorologist at ${new Date().toLocaleTimeString()}`,
+                operator_name: 'Duty Meteorologist'
+            });
+
+            actionBox.innerHTML = `
+                <div class="p-2 rounded bg-success bg-opacity-10 border border-success text-success small text-center fw-bold">
+                    <i class="fa-solid fa-check-circle me-1"></i> Feedback Saved (${decision})
+                </div>
+            `;
+        } catch (err) {
+            alert("Error submitting feedback: " + err.message);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAnomalies);
+</script>
+{% endblock %}

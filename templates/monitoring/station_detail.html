@@ -1,0 +1,277 @@
+{% extends 'monitoring/base.html' %}
+{% load static %}
+
+{% block title %}{{ station.station_id }} — Station Telemetry & Diagnostics{% endblock %}
+{% block header_title %}Station Detail: {{ station.name }} ({{ station.station_id }}){% endblock %}
+
+{% block content %}
+<!-- Station Overview Header -->
+<div class="card-custom mb-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <h2 class="font-heading fs-3 mb-0 text-dark">{{ station.name }}</h2>
+                <span class="font-monospace text-primary bg-light px-2 py-1 rounded border fs-6">
+                    {{ station.station_id }}
+                </span>
+                <span id="station-status-badge">
+                    {% if station.status == 'ACTIVE' %}
+                    <span class="sg-badge sg-badge-active"><i class="fa-solid fa-tower-cell"></i> Active</span>
+                    {% elif station.status == 'WARNING' %}
+                    <span class="sg-badge sg-badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Warning</span>
+                    {% elif station.status == 'CRITICAL' %}
+                    <span class="sg-badge sg-badge-critical"><i class="fa-solid fa-skull-crossbones"></i> Critical</span>
+                    {% else %}
+                    <span class="sg-badge sg-badge-offline"><i class="fa-solid fa-power-off"></i> Offline</span>
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-4 text-muted small flex-wrap">
+                <span><i class="fa-solid fa-location-dot text-danger me-1"></i> Coordinates: {{ station.latitude }}, {{ station.longitude }}</span>
+                <span><i class="fa-solid fa-mountain text-info me-1"></i> Elevation: {{ station.elevation }} m</span>
+                <span><i class="fa-solid fa-calendar-day text-secondary me-1"></i> Installed: {{ station.installation_date }}</span>
+                <span><i class="fa-solid fa-heart-pulse text-success me-1"></i> Fleet Health Index: <strong class="text-dark">{{ avg_health }}%</strong></span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'stations-list' %}" class="btn-custom btn-secondary-custom">
+                <i class="fa-solid fa-arrow-left"></i> Back to Fleet
+            </a>
+            <button class="btn-custom btn-primary-custom" onclick="loadStationData()">
+                <i class="fa-solid fa-rotate me-1"></i> Refresh Live Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Three Live Line Charts (Temperature, Humidity, Pressure) -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h4 class="card-title-custom" style="font-size: 0.95rem;">
+                    <i class="fa-solid fa-temperature-high text-warning"></i> Temperature History (°C)
+                </h4>
+            </div>
+            <div style="height: 220px; position: relative;">
+                <canvas id="tempChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h4 class="card-title-custom" style="font-size: 0.95rem;">
+                    <i class="fa-solid fa-droplet text-info"></i> Relative Humidity (%)
+                </h4>
+            </div>
+            <div style="height: 220px; position: relative;">
+                <canvas id="humidityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h4 class="card-title-custom" style="font-size: 0.95rem;">
+                    <i class="fa-solid fa-gauge-high text-primary"></i> Atmospheric Pressure (hPa)
+                </h4>
+            </div>
+            <div style="height: 220px; position: relative;">
+                <canvas id="pressureChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sensor Health Panel -->
+<div class="card-custom mb-4">
+    <div class="card-header-custom">
+        <h3 class="card-title-custom">
+            <i class="fa-solid fa-notes-medical text-success"></i> Sensor Hardware Health & Drift Diagnostics
+        </h3>
+    </div>
+
+    <div class="row g-4" id="sensor-health-container">
+        {% for health in health_metrics %}
+        <div class="col-md-4">
+            <div class="p-3 rounded border" style="background: #f8fafc; border-color: #e2e8f0 !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-dark">{{ health.get_sensor_type_display }}</strong>
+                    <span class="fw-bold {% if health.health_score >= 80 %}text-success{% elif health.health_score >= 50 %}text-warning{% else %}text-danger{% endif %}">
+                        {{ health.health_score|floatformat:1 }}%
+                    </span>
+                </div>
+
+                <div class="progress mb-3" style="height: 10px; background: #e2e8f0;">
+                    <div class="progress-bar {% if health.health_score >= 80 %}bg-success{% elif health.health_score >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                         role="progressbar" style="width: {{ health.health_score }}%;"></div>
+                </div>
+
+                <div class="row g-2 extra-small text-muted border-top pt-2" style="border-color: #e2e8f0 !important;">
+                    <div class="col-6">Drift Bias: <span class="text-dark fw-semibold">{{ health.drift_score }}</span></div>
+                    <div class="col-6">Fault Count: <span class="text-dark fw-semibold">{{ health.failure_count }}</span></div>
+                    <div class="col-6">Missing Data: <span class="text-dark fw-semibold">{{ health.missing_count }}</span></div>
+                    <div class="col-6">Checked: <span class="text-dark fw-semibold">{{ health.last_checked|date:"H:i" }}</span></div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-muted small py-2">
+            No sensor health records generated yet. Run telemetry readings to populate sensor health indicators.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Station Scoped Anomaly History -->
+<div class="card-custom">
+    <div class="card-header-custom">
+        <h3 class="card-title-custom">
+            <i class="fa-solid fa-clock-rotate-left"></i> Station Anomaly Detection History
+        </h3>
+        <span class="text-muted small">Showing last {{ recent_anomalies|length }} flagged events</span>
+    </div>
+
+    <div class="table-responsive-custom">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>Detected At</th>
+                    <th>Parameter</th>
+                    <th>Classification</th>
+                    <th>Fault Type</th>
+                    <th>Severity</th>
+                    <th>Confidence</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for anom in recent_anomalies %}
+                <tr>
+                    <td class="text-muted font-monospace small">{{ anom.detected_at|date:"Y-m-d H:i:s" }}</td>
+                    <td class="fw-semibold text-primary">{{ anom.get_parameter_display }}</td>
+                    <td>
+                        {% if anom.classification == 'GENUINE_WEATHER_EVENT' %}
+                        <span class="sg-badge sg-badge-weather"><i class="fa-solid fa-cloud-bolt"></i> Genuine Weather</span>
+                        {% elif anom.classification == 'SENSOR_FAULT' %}
+                        <span class="sg-badge sg-badge-fault"><i class="fa-solid fa-triangle-exclamation"></i> Sensor Fault</span>
+                        {% elif anom.classification == 'DATA_ISSUE' %}
+                        <span class="sg-badge sg-badge-data"><i class="fa-solid fa-wifi"></i> Data Issue</span>
+                        {% else %}
+                        <span class="sg-badge sg-badge-normal"><i class="fa-solid fa-check"></i> Normal</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-semibold text-dark">{{ anom.get_fault_type_display }}</td>
+                    <td>
+                        {% if anom.severity == 'CRITICAL' or anom.severity == 'HIGH' %}
+                        <span class="sg-badge sg-badge-critical">{{ anom.severity }}</span>
+                        {% else %}
+                        <span class="sg-badge sg-badge-warning">{{ anom.severity }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold text-dark">{% widthratio anom.confidence 1 100 %}%</td>
+                    <td>
+                        <button class="btn-custom btn-secondary-custom btn-sm-custom" type="button" data-bs-toggle="collapse" data-bs-target="#anom-detail-{{ anom.id }}">
+                            View XAI <i class="fa-solid fa-chevron-down ms-1"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr class="collapse" id="anom-detail-{{ anom.id }}">
+                    <td colspan="7" class="p-0">
+                        <div class="p-3 my-2 rounded border" style="background: #f8fafc; border-color: #cbd5e1 !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="text-primary"><i class="fa-solid fa-brain me-1"></i> Explainable AI Diagnostic</strong>
+                                <span class="badge bg-secondary">Anomaly Score: {{ anom.anomaly_score|floatformat:2 }}</span>
+                            </div>
+                            <p class="text-secondary small mb-2" style="white-space: pre-line;">{{ anom.explanation }}</p>
+                            <div class="p-2 rounded bg-white border-start border-warning border-3 text-dark small shadow-sm">
+                                <strong>Recommended Operational Action:</strong> {{ anom.recommended_action }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No anomalies recorded for this AWS station.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const stationId = '{{ station.station_id }}';
+    let tempChart, humidityChart, pressureChart;
+
+    function createChart(ctxId, label, color, fillColor) {
+        const ctx = document.getElementById(ctxId).getContext('2d');
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: label,
+                    data: [],
+                    borderColor: color,
+                    backgroundColor: fillColor,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', font: { size: 10 } } },
+                    y: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', font: { size: 10 } } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    function initCharts() {
+        tempChart = createChart('tempChart', 'Temperature (°C)', '#d97706', 'rgba(217, 119, 6, 0.08)');
+        humidityChart = createChart('humidityChart', 'Humidity (%)', '#0891b2', 'rgba(8, 145, 178, 0.08)');
+        pressureChart = createChart('pressureChart', 'Pressure (hPa)', '#4f46e5', 'rgba(79, 70, 229, 0.08)');
+    }
+
+    async function loadStationData() {
+        try {
+            const readings = await SkyGuardAPI.get(`readings/?station_id=${stationId}&limit=50`);
+            readings.reverse();
+
+            const timestamps = readings.map(r => new Date(r.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+            
+            tempChart.data.labels = timestamps;
+            tempChart.data.datasets[0].data = readings.map(r => r.temperature);
+            tempChart.update();
+
+            humidityChart.data.labels = timestamps;
+            humidityChart.data.datasets[0].data = readings.map(r => r.humidity);
+            humidityChart.update();
+
+            pressureChart.data.labels = timestamps;
+            pressureChart.data.datasets[0].data = readings.map(r => r.pressure);
+            pressureChart.update();
+        } catch (err) {
+            console.error("Error loading station detail data:", err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        loadStationData();
+    });
+</script>
+{% endblock %}
