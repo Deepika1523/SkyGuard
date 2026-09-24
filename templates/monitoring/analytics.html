@@ -184,16 +184,28 @@
         try {
             const data = await SkyGuardAPI.get('metrics/');
             
-            document.getElementById('hero-accuracy-val').innerText = `${data.overall_accuracy}%`;
-            document.getElementById('cnt-healthy').innerText = data.health_distribution.healthy;
-            document.getElementById('cnt-warning').innerText = data.health_distribution.warning;
-            document.getElementById('cnt-critical').innerText = data.health_distribution.critical;
+            if (data && data.overall_accuracy !== undefined) {
+                document.getElementById('hero-accuracy-val').innerText = `${data.overall_accuracy}%`;
+            }
+            if (data && data.health_distribution) {
+                document.getElementById('cnt-healthy').innerText = data.health_distribution.healthy || 0;
+                document.getElementById('cnt-warning').innerText = data.health_distribution.warning || 0;
+                document.getElementById('cnt-critical').innerText = data.health_distribution.critical || 0;
+                initDonutChart(data.health_distribution);
+            }
 
-            initMetricsChart(data.metrics_by_fault_type);
-            initDonutChart(data.health_distribution);
+            const metricsList = (data && Array.isArray(data.metrics_by_fault_type)) ? data.metrics_by_fault_type : [];
+            if (metricsList.length > 0) {
+                initMetricsChart(metricsList);
+            }
 
             const tbody = document.getElementById('evaluator-table-body');
-            tbody.innerHTML = data.metrics_by_fault_type.map(m => `
+            if (metricsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">No analytics data available.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = metricsList.map(m => `
                 <tr>
                     <td class="fw-bold text-dark">${m.fault_type}</td>
                     <td class="text-primary fw-semibold">${m.precision}%</td>

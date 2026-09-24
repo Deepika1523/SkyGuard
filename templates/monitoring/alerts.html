@@ -47,13 +47,16 @@
         const filterStatus = document.getElementById('alert-status-filter').value;
 
         try {
-            let alerts = await SkyGuardAPI.get('alerts/');
-            if (alerts && alerts.results && Array.isArray(alerts.results)) {
-                alerts = alerts.results;
+            let res = await SkyGuardAPI.get('alerts/');
+            let alerts = [];
+            if (Array.isArray(res)) {
+                alerts = res;
+            } else if (res && Array.isArray(res.results)) {
+                alerts = res.results;
+            } else if (res && Array.isArray(res.alerts)) {
+                alerts = res.alerts;
             }
-            if (!alerts || !Array.isArray(alerts)) {
-                alerts = [];
-            }
+
             let filtered = alerts;
             if (filterStatus !== 'ALL') {
                 filtered = alerts.filter(a => a.status === filterStatus);

@@ -85,10 +85,16 @@
         if (severity) params.severity = severity;
 
         try {
-            let anomalies = await SkyGuardAPI.get('anomalies/', params);
-            if (anomalies && anomalies.results && Array.isArray(anomalies.results)) {
-                anomalies = anomalies.results;
+            let res = await SkyGuardAPI.get('anomalies/', params);
+            let anomalies = [];
+            if (Array.isArray(res)) {
+                anomalies = res;
+            } else if (res && Array.isArray(res.results)) {
+                anomalies = res.results;
+            } else if (res && Array.isArray(res.anomalies)) {
+                anomalies = res.anomalies;
             }
+
             if (!anomalies || !Array.isArray(anomalies) || anomalies.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No anomalies match the selected filters.</td></tr>`;
                 return;
