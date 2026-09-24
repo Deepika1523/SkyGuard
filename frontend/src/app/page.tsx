@@ -24,7 +24,6 @@ import {
   ShieldCheck, 
   Users,
   Radio,
-  CheckCircle2,
   Sparkles,
   Brain,
   Atom,
