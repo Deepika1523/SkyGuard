@@ -13,10 +13,10 @@
     --bg-sidebar-border: #e2e8f0;
     --sidebar-text-title: #64748b;
     --sidebar-link: #475569;
-    --sidebar-link-hover: #2563eb;
-    --sidebar-link-hover-bg: #f1f5f9;
-    --sidebar-link-active-bg: rgba(37, 99, 235, 0.08);
-    --sidebar-link-active-color: #2563eb;
+    --sidebar-link-hover: #1d4ed8;
+    --sidebar-link-hover-bg: #eff6ff;
+    --sidebar-link-active-bg: rgba(15, 43, 92, 0.08);
+    --sidebar-link-active-color: #0f2b5c;
 
     /* Typography */
     --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -26,21 +26,22 @@
     --text-primary: #0f172a;
     --text-secondary: #334155;
     --text-muted: #64748b;
-    --text-accent: #2563eb;
+    --text-accent: #1d4ed8;
 
     /* Brand Accent Colors */
-    --accent-teal: #0284c7;
-    --accent-teal-dark: #0369a1;
-    --accent-blue: #2563eb;
-    --accent-indigo: #4f46e5;
-    --accent-purple: #7c3aed;
-    --accent-dark-blue: #0A4D9C;
+    --accent-teal: #0f2b5c;
+    --accent-teal-dark: #0a1e42;
+    --accent-blue: #1d4ed8;
+    --accent-indigo: #1e40af;
+    --accent-purple: #3b82f6;
+    --accent-dark-blue: #0f2b5c;
 
     /* Status & Severity Colors */
     --status-healthy: #16a34a;
     --status-healthy-bg: #dcfce7;
     --status-healthy-border: #86efac;
 
+    /* Status & Severity Colors */
     --status-warning: #d97706;
     --status-warning-bg: #fef3c7;
     --status-warning-border: #fde68a;
@@ -55,9 +56,9 @@
 
     /* Classifications */
     --cls-normal: #16a34a;
-    --cls-weather: #0284c7;
+    --cls-weather: #0f2b5c;
     --cls-fault: #d97706;
-    --cls-data: #2563eb;
+    --cls-data: #1d4ed8;
 }
 
 /* Global Reset & Base */
@@ -129,13 +130,13 @@ a:hover {
     width: 38px;
     height: 38px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #0f2b5c 0%, #1d4ed8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.15rem;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    box-shadow: 0 4px 12px rgba(15, 43, 92, 0.3);
 }
 
 .brand-text h1 {
@@ -420,14 +421,14 @@ a:hover {
 
 .stat-card-teal,
 .lexa-stat-card {
-    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #0f2b5c 0%, #1d4ed8 100%);
     border-radius: 16px;
     padding: 1.35rem;
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 6px 18px rgba(15, 43, 92, 0.25);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     position: relative;
     overflow: hidden;
@@ -436,7 +437,7 @@ a:hover {
 .stat-card-teal:hover,
 .lexa-stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 10px 24px rgba(29, 78, 216, 0.35);
 }
 
 .stat-card-teal::before,
@@ -660,19 +661,19 @@ a:hover {
 }
 
 .btn-primary-custom {
-    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #0f2b5c 0%, #1d4ed8 100%);
     color: #ffffff;
     border-radius: 30px;
     padding: 8px 18px;
     font-weight: 700;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 14px rgba(15, 43, 92, 0.25);
 }
 
 .btn-primary-custom:hover {
-    background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #0a1e42 0%, #1e40af 100%);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 6px 18px rgba(29, 78, 216, 0.35);
 }
 
 .btn-secondary-custom {

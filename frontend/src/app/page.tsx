@@ -188,7 +188,7 @@ export default function HomePage() {
         
         {/* Brand Logo */}
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-600 to-blue-600 flex items-center justify-center text-white shadow-md shadow-sky-600/30">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0f2b5c] to-[#1d4ed8] flex items-center justify-center text-white shadow-md shadow-[#0f2b5c]/30">
             <CloudSun className="w-6 h-6" />
           </div>
           <div>
@@ -203,21 +203,21 @@ export default function HomePage() {
 
         {/* Center Nav Links */}
         <ul className="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
-          <li><a href="#" className="text-blue-600 border-b-2 border-blue-600 pb-1">Home</a></li>
-          <li><a href="#about" className="hover:text-blue-600 transition-colors">About</a></li>
-          <li><a href="#features" className="hover:text-blue-600 transition-colors">Features</a></li>
-          <li><a href="#livedata" className="hover:text-blue-600 transition-colors">Live Data</a></li>
-          <li><a href="#impact" className="hover:text-blue-600 transition-colors">Impact</a></li>
-          <li><a href="#contact" className="hover:text-blue-600 transition-colors">Contact</a></li>
+          <li><a href="#" className="text-[#1d4ed8] border-b-2 border-[#1d4ed8] pb-1">Home</a></li>
+          <li><a href="#about" className="hover:text-[#1d4ed8] transition-colors">About</a></li>
+          <li><a href="#features" className="hover:text-[#1d4ed8] transition-colors">Features</a></li>
+          <li><a href="#livedata" className="hover:text-[#1d4ed8] transition-colors">Live Data</a></li>
+          <li><a href="#impact" className="hover:text-[#1d4ed8] transition-colors">Impact</a></li>
+          <li><a href="#contact" className="hover:text-[#1d4ed8] transition-colors">Contact</a></li>
         </ul>
 
         {/* Right Nav Action */}
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowUploadModal(true)}
-            className="px-4 py-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
+            className="px-4 py-2 rounded-full bg-blue-50 hover:bg-blue-100 text-[#0f2b5c] border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
           >
-            <UploadCloud className="w-3.5 h-3.5 text-blue-600" />
+            <UploadCloud className="w-3.5 h-3.5 text-[#1d4ed8]" />
             <span>Upload Dataset (CSV)</span>
           </button>
 
@@ -228,7 +228,7 @@ export default function HomePage() {
 
           <button
             onClick={() => setShowDashboardView(true)}
-            className="px-6 py-2.5 rounded-full bg-[#0A4D9C] hover:bg-[#083b78] text-white text-sm font-bold flex items-center gap-2 shadow-md transition-all transform hover:-translate-y-0.5"
+            className="px-6 py-2.5 rounded-full bg-[#0f2b5c] hover:bg-[#0a1e42] text-white text-sm font-bold flex items-center gap-2 shadow-md transition-all transform hover:-translate-y-0.5"
           >
             <span>Get Started</span>
             <ArrowRight className="w-4 h-4" />
@@ -257,15 +257,15 @@ export default function HomePage() {
         <div className="relative z-10 max-w-2xl space-y-6 pl-4">
           
           <div className="flex items-center space-x-2">
-            <span className="w-6 h-0.5 bg-blue-600"></span>
-            <span className="text-xs font-mono font-bold tracking-widest text-blue-600 uppercase">
+            <span className="w-6 h-0.5 bg-[#1d4ed8]"></span>
+            <span className="text-xs font-mono font-bold tracking-widest text-[#1d4ed8] uppercase">
               WEATHER INTELLIGENCE FOR A SAFER TOMORROW
             </span>
           </div>
 
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
             Smarter Monitoring<br />
-            for a <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Safer Tomorrow</span>
+            for a <span className="bg-gradient-to-r from-[#0f2b5c] to-[#1d4ed8] bg-clip-text text-transparent">Safer Tomorrow</span>
           </h1>
 
           <p className="text-base lg:text-lg text-slate-600 leading-relaxed max-w-xl">
@@ -275,7 +275,7 @@ export default function HomePage() {
           <div className="flex items-center space-x-4 pt-2">
             <button
               onClick={() => setShowDashboardView(true)}
-              className="px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30 transition-all transform hover:-translate-y-0.5"
+              className="px-7 py-3.5 rounded-full bg-[#0f2b5c] hover:bg-[#0a1e42] text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#0f2b5c]/30 transition-all transform hover:-translate-y-0.5"
             >
               <span>Explore Live Data</span>
               <ArrowRight className="w-4 h-4" />
