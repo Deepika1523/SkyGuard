@@ -408,28 +408,28 @@ a:hover {
 }
 
 .content-container {
-    padding: 1.5rem;
+    padding: 2.25rem 2.5rem;
     flex: 1;
 }
 
 /* VIBRANT TEAL STAT CARDS */
 .stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .stat-card-teal,
 .lexa-stat-card {
     background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-    border-radius: 16px;
-    padding: 1.35rem;
+    border-radius: 20px;
+    padding: 1.65rem 1.85rem;
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.22);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     position: relative;
     overflow: hidden;
@@ -504,23 +504,23 @@ a:hover {
 .card-custom {
     background: var(--bg-surface);
     border: 1px solid var(--bg-card-border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
-    margin-bottom: 1.5rem;
-    transition: box-shadow 0.2s ease;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2rem;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .card-custom-hover:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .card-header-custom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
+    margin-bottom: 1.35rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--bg-card-border);
 }
 
@@ -633,9 +633,9 @@ a:hover {
     background: #ffffff;
     border: 1px solid #ced4da;
     color: var(--text-primary);
-    border-radius: 6px;
-    padding: 7px 12px;
-    font-size: 0.85rem;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 0.88rem;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }

@@ -119,8 +119,8 @@ export default function HomePage() {
             unresolvedAlertCount={anomalies.filter(a => a.status === 'UNASSIGNED').length}
           />
 
-          <main className="flex-1 p-6 overflow-y-auto max-w-[1600px] mx-auto w-full">
-            <div className="mb-4 flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
+          <main className="flex-1 p-8 lg:p-10 overflow-y-auto max-w-[1700px] mx-auto w-full space-y-6">
+            <div className="mb-6 flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
               <span className="text-xs font-mono text-slate-600 font-bold flex items-center gap-2">
                 <Radio className="w-4 h-4 text-sky-600" /> SkyGuard AI Command Center Active
               </span>

@@ -49,13 +49,13 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   });
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-8 font-sans p-2">
       
       {/* 1. Top KPI Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* KPI 1: STATIONS ACTIVE */}
-        <div className="bg-gradient-to-br from-[#0284c7] to-[#2563eb] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-blue-500/20 text-white">
+        <div className="bg-gradient-to-br from-[#0284c7] to-[#2563eb] rounded-2xl p-5 relative overflow-hidden group transition-all shadow-md shadow-blue-500/20 text-white">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider font-mono opacity-90">
