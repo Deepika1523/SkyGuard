@@ -46,10 +46,8 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand & Mission Tagline */}
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <div className={`p-2.5 rounded-xl ${
-              emergencyMode ? 'bg-red-600 text-white animate-pulse' : 'bg-sky-600 text-white shadow-md shadow-sky-600/20'
-            } font-bold`}>
-              <ShieldAlert className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-full overflow-hidden shadow-md border border-slate-100 bg-white flex items-center justify-center p-0.5">
+              <img src="/logo.png" alt="SkyGuard Logo" className="w-full h-full object-cover rounded-full" />
             </div>
             {activeCriticalCount > 0 && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4">

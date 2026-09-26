@@ -41,8 +41,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Brand Header inside Sidebar */}
         <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0284c7] to-[#2563eb] flex items-center justify-center text-white shadow-md">
-            <Radio className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-full overflow-hidden shadow-md border border-slate-100 flex items-center justify-center bg-white">
+            <img src="/logo.png" alt="SkyGuard Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1">
