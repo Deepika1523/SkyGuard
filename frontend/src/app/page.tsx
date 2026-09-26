@@ -11,6 +11,7 @@ import { AlertTriage } from '@/components/alerts/AlertTriage';
 import { AnomalyHistory } from '@/components/history/AnomalyHistory';
 import { FleetManagement } from '@/components/fleet/FleetManagement';
 import { SystemSettings } from '@/components/settings/SystemSettings';
+import { SystemArchitecture } from '@/components/settings/SystemArchitecture';
 import { DatasetUploader } from '@/components/monitoring/DatasetUploader';
 import { 
   ArrowRight, 
@@ -180,7 +181,7 @@ export default function HomePage() {
             )}
 
             {activeTab === 'about' && (
-              <SystemSettings />
+              <SystemArchitecture />
             )}
 
             {activeTab === 'monitoring' && (

@@ -33,11 +33,15 @@
     <!-- Clean SVG Architecture Diagram (Light Theme) -->
     <div class="p-3 text-center">
         <svg viewBox="0 0 1000 240" class="w-100" style="max-height: 240px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;">
-            <!-- Flow arrows -->
+            <!-- Flow arrows & Gradients -->
             <defs>
                 <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                     <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7" />
                 </marker>
+                <linearGradient id="decisionGradDjango" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#0284c7" />
+                    <stop offset="100%" stop-color="#2563eb" />
+                </linearGradient>
             </defs>
 
             <!-- Level 1 QC Box -->
@@ -73,7 +77,7 @@
             <line x1="800" y1="120" x2="835" y2="120" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)"/>
 
             <!-- Synthesis & Decision Engine -->
-            <rect x="835" y="55" width="145" height="130" rx="10" fill="linear-gradient(135deg, #0284c7, #2563eb)" stroke="#0284c7" stroke-width="2"/>
+            <rect x="835" y="55" width="145" height="130" rx="10" fill="url(#decisionGradDjango)" stroke="#0284c7" stroke-width="2"/>
             <text x="907" y="95" fill="#ffffff" font-family="Outfit" font-size="14" font-weight="800" text-anchor="middle">Decision Engine</text>
             <text x="907" y="120" fill="#ffffff" font-family="Inter" font-size="11" text-anchor="middle">XAI Diagnostics</text>
             <text x="907" y="138" fill="#ffffff" font-family="Inter" font-size="11" text-anchor="middle">Data Imputation</text>

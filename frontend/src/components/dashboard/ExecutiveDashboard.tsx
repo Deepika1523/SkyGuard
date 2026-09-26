@@ -308,21 +308,33 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             </div>
           </div>
 
-          <div className="relative min-h-[380px] bg-slate-50 border border-slate-200 rounded-xl p-4 overflow-hidden flex flex-col justify-between">
-            <div className="relative z-10 flex justify-between items-center text-xs font-mono bg-white border border-slate-200 p-2.5 rounded-lg shadow-xs">
+          {/* Interactive OpenStreetMap GIS Map Canvas */}
+          <div className="relative min-h-[360px] bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-inner">
+            <iframe
+              title="IMD AWS Regional GIS Map"
+              width="100%"
+              height="360"
+              style={{ border: 0, filter: 'contrast(1.05) brightness(0.98)' }}
+              src="https://www.openstreetmap.org/export/embed.html?bbox=68.7,8.0,97.25,35.5&layer=mapnik"
+              className="w-full h-[360px] rounded-xl"
+            />
+
+            {/* Overlay Status Bar */}
+            <div className="absolute top-3 left-3 right-3 z-10 flex justify-between items-center text-xs font-mono bg-white/95 backdrop-blur-md border border-slate-200 p-2.5 rounded-xl shadow-md">
               <div className="flex items-center space-x-4">
-                <span className="flex items-center gap-1.5 text-slate-700">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Safe
+                <span className="flex items-center gap-1.5 text-slate-800 font-semibold">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Safe AWS (6)
                 </span>
-                <span className="flex items-center gap-1.5 text-slate-700">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Warning
+                <span className="flex items-center gap-1.5 text-slate-800 font-semibold">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Warning (1)
                 </span>
-                <span className="flex items-center gap-1.5 text-slate-700">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span> Critical Disaster
+                <span className="flex items-center gap-1.5 text-slate-800 font-semibold">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span> Critical Disaster (2)
                 </span>
               </div>
-              <span className="text-slate-400">Grid: India AWS Cluster</span>
+              <span className="text-slate-600 font-bold bg-slate-100 px-2 py-0.5 rounded-md">Live IMD GIS Layer</span>
             </div>
+          </div>
 
             <div className="relative z-10 my-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {filteredStations.map((st) => {
@@ -381,8 +393,6 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               <span className="text-sky-600 font-bold">Live Socket Updates Active</span>
             </div>
           </div>
-
-        </div>
 
         {/* Right Column: Live Anomaly Ticker */}
         <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 flex flex-col justify-between shadow-xs">
