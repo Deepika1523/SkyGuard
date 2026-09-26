@@ -139,19 +139,18 @@ export default function HomePage() {
                 metrics={metrics}
                 onSelectStation={(id) => {
                   setSelectedStationId(id);
-                  setActiveTab('monitoring');
+                  setActiveTab('analytics');
                 }}
                 onAcknowledgeAnomaly={acknowledgeAnomaly}
               />
             )}
 
-            {activeTab === 'monitoring' && (
-              <RealTimeStream
-                stations={stations}
-                selectedStationId={selectedStationId}
-                onSelectStation={setSelectedStationId}
-                lastTickTime={lastTickTime}
-              />
+            {activeTab === 'fleet' && (
+              <FleetManagement stations={stations} />
+            )}
+
+            {activeTab === 'anomalies' && (
+              <AnomalyHistory anomalies={anomalies} />
             )}
 
             {activeTab === 'alerts' && (
@@ -163,12 +162,34 @@ export default function HomePage() {
               />
             )}
 
-            {activeTab === 'history' && (
+            {activeTab === 'upload' && (
+              <DatasetUploader onUploadSuccess={() => setActiveTab('dashboard')} />
+            )}
+
+            {activeTab === 'analytics' && (
+              <RealTimeStream
+                stations={stations}
+                selectedStationId={selectedStationId}
+                onSelectStation={setSelectedStationId}
+                lastTickTime={lastTickTime}
+              />
+            )}
+
+            {activeTab === 'reports' && (
               <AnomalyHistory anomalies={anomalies} />
             )}
 
-            {activeTab === 'fleet' && (
-              <FleetManagement stations={stations} />
+            {activeTab === 'about' && (
+              <SystemSettings />
+            )}
+
+            {activeTab === 'monitoring' && (
+              <RealTimeStream
+                stations={stations}
+                selectedStationId={selectedStationId}
+                onSelectStation={setSelectedStationId}
+                lastTickTime={lastTickTime}
+              />
             )}
 
             {activeTab === 'settings' && (
