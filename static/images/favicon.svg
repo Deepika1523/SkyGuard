@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyguardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- SkyGuard AI Logo Base Container -->
+  <rect width="512" height="512" rx="128" fill="url(#skyguardGrad)"/>
+
+  <!-- White Cloud & Lightning Bolt Icon (Matching fa-cloud-bolt) -->
+  <g fill="#ffffff">
+    <!-- Cloud Contour -->
+    <path d="M 160 320 L 352 320 C 396 320 424 288 424 248 C 424 212 396 182 360 178 C 348 132 308 100 260 100 C 212 100 172 130 160 174 C 126 178 100 206 100 240 C 100 282 128 320 160 320 Z"/>
+    
+    <!-- Lightning Bolt Cutout/Symbol -->
+    <path d="M 275 145 L 205 265 L 260 265 L 235 375 L 325 235 L 270 235 Z" fill="#0284c7" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/>
+  </g>
+</svg>

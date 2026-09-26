@@ -7,7 +7,7 @@
     --bg-surface: #ffffff;
     --bg-surface-hover: #f1f5f9;
     --bg-card-border: #e2e8f0;
-    
+
     /* LIGHT SIDEBAR VARIABLES */
     --bg-sidebar: #ffffff;
     --bg-sidebar-border: #e2e8f0;
@@ -17,17 +17,17 @@
     --sidebar-link-hover-bg: #f1f5f9;
     --sidebar-link-active-bg: rgba(37, 99, 235, 0.08);
     --sidebar-link-active-color: #2563eb;
-    
+
     /* Typography */
     --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    
+
     /* Text Colors */
     --text-primary: #0f172a;
     --text-secondary: #334155;
     --text-muted: #64748b;
     --text-accent: #2563eb;
-    
+
     /* Brand Accent Colors */
     --accent-teal: #0284c7;
     --accent-teal-dark: #0369a1;
@@ -35,24 +35,24 @@
     --accent-indigo: #4f46e5;
     --accent-purple: #7c3aed;
     --accent-dark-blue: #0A4D9C;
-    
+
     /* Status & Severity Colors */
     --status-healthy: #16a34a;
     --status-healthy-bg: #dcfce7;
     --status-healthy-border: #86efac;
-    
+
     --status-warning: #d97706;
     --status-warning-bg: #fef3c7;
     --status-warning-border: #fde68a;
-    
+
     --status-critical: #dc2626;
     --status-critical-bg: #fee2e2;
     --status-critical-border: #fca5a5;
-    
+
     --status-offline: #64748b;
     --status-offline-bg: #f1f5f9;
     --status-offline-border: #cbd5e1;
-    
+
     /* Classifications */
     --cls-normal: #16a34a;
     --cls-weather: #0284c7;
@@ -71,7 +71,13 @@ body {
     overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading {
     font-family: var(--font-heading);
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -412,7 +418,8 @@ a:hover {
     margin-bottom: 1.5rem;
 }
 
-.stat-card-teal, .lexa-stat-card {
+.stat-card-teal,
+.lexa-stat-card {
     background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
     border-radius: 16px;
     padding: 1.35rem;
@@ -426,12 +433,14 @@ a:hover {
     overflow: hidden;
 }
 
-.stat-card-teal:hover, .lexa-stat-card:hover {
+.stat-card-teal:hover,
+.lexa-stat-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3);
 }
 
-.stat-card-teal::before, .lexa-stat-card::before {
+.stat-card-teal::before,
+.lexa-stat-card::before {
     content: '';
     position: absolute;
     top: -20px;
@@ -443,7 +452,8 @@ a:hover {
     pointer-events: none;
 }
 
-.stat-card-label, .lexa-stat-label {
+.stat-card-label,
+.lexa-stat-label {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -452,7 +462,8 @@ a:hover {
     margin-bottom: 6px;
 }
 
-.stat-card-value, .lexa-stat-value {
+.stat-card-value,
+.lexa-stat-value {
     font-family: var(--font-heading);
     font-size: 1.85rem;
     font-weight: 800;
@@ -460,7 +471,8 @@ a:hover {
     margin-bottom: 8px;
 }
 
-.stat-card-badge, .lexa-stat-badge {
+.stat-card-badge,
+.lexa-stat-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -472,7 +484,8 @@ a:hover {
     border-radius: 20px;
 }
 
-.stat-card-icon-wrapper, .lexa-stat-icon-wrapper {
+.stat-card-icon-wrapper,
+.lexa-stat-icon-wrapper {
     width: 50px;
     height: 50px;
     border-radius: 14px;
@@ -537,19 +550,24 @@ a:hover {
     line-height: 1;
 }
 
-.sg-badge-active, .sg-badge-healthy, .sg-badge-normal {
+.sg-badge-active,
+.sg-badge-healthy,
+.sg-badge-normal {
     background: var(--status-healthy-bg);
     color: var(--status-healthy);
     border: 1px solid var(--status-healthy-border);
 }
 
-.sg-badge-warning, .sg-badge-medium, .sg-badge-fault {
+.sg-badge-warning,
+.sg-badge-medium,
+.sg-badge-fault {
     background: var(--status-warning-bg);
     color: var(--status-warning);
     border: 1px solid var(--status-warning-border);
 }
 
-.sg-badge-critical, .sg-badge-high {
+.sg-badge-critical,
+.sg-badge-high {
     background: var(--status-critical-bg);
     color: var(--status-critical);
     border: 1px solid var(--status-critical-border);
@@ -608,7 +626,8 @@ a:hover {
 }
 
 /* FORM CONTROLS */
-.form-control-custom, .form-select-custom {
+.form-control-custom,
+.form-select-custom {
     background: #ffffff;
     border: 1px solid #ced4da;
     color: var(--text-primary);
@@ -619,7 +638,8 @@ a:hover {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-control-custom:focus, .form-select-custom:focus {
+.form-control-custom:focus,
+.form-select-custom:focus {
     border-color: var(--accent-teal);
     box-shadow: 0 0 0 3px rgba(43, 189, 158, 0.15);
     background: #ffffff;
@@ -683,14 +703,16 @@ a:hover {
 }
 
 /* ACTIVITY STREAM & TIMELINE */
-.activity-list, .lexa-activity-list {
+.activity-list,
+.lexa-activity-list {
     position: relative;
     padding-left: 20px;
     margin: 0;
     list-style: none;
 }
 
-.activity-list::before, .lexa-activity-list::before {
+.activity-list::before,
+.lexa-activity-list::before {
     content: '';
     position: absolute;
     top: 5px;
@@ -700,16 +722,19 @@ a:hover {
     background: #e9ecef;
 }
 
-.activity-item, .lexa-activity-item {
+.activity-item,
+.lexa-activity-item {
     position: relative;
     margin-bottom: 1.25rem;
 }
 
-.activity-item:last-child, .lexa-activity-item:last-child {
+.activity-item:last-child,
+.lexa-activity-item:last-child {
     margin-bottom: 0;
 }
 
-.activity-dot, .lexa-activity-dot {
+.activity-dot,
+.lexa-activity-dot {
     position: absolute;
     left: -20px;
     top: 4px;
@@ -720,7 +745,8 @@ a:hover {
     border: 2px solid #ffffff;
 }
 
-.activity-date, .lexa-activity-date {
+.activity-date,
+.lexa-activity-date {
     font-size: 0.7rem;
     font-weight: 700;
     color: var(--text-muted);
@@ -732,7 +758,8 @@ a:hover {
     margin-bottom: 4px;
 }
 
-.activity-text, .lexa-activity-text {
+.activity-text,
+.lexa-activity-text {
     font-size: 0.85rem;
     color: var(--text-secondary);
     margin: 0;
@@ -764,9 +791,11 @@ a:hover {
     .sidebar {
         transform: translateX(-100%);
     }
+
     .sidebar.open {
         transform: translateX(0);
     }
+
     .main-wrapper {
         margin-left: 0;
     }

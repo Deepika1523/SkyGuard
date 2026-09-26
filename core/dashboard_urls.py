@@ -14,6 +14,7 @@ from .dashboard_views import (
 
 urlpatterns = [
     path('', main_homepage_view, name='dashboard-home'),
+    path('home/', main_homepage_view, name='main-home'),
     path('dashboard/', dashboard_index_view, name='dashboard-app'),
     path('stations/', stations_list_view, name='stations-list'),
     path('stations/<str:station_id>/', station_detail_view, name='station-detail'),
