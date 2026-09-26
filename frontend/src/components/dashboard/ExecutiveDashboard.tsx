@@ -49,90 +49,87 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* KPI 1: Active AWS Stations */}
-        <div className="bg-gradient-to-br from-[#0ea5e9] to-[#60a5fa] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-[#0ea5e9]/20 text-white">
+        <div className="bg-gradient-to-br from-[#0284c7] to-[#2563eb] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-blue-500/20 text-white">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider font-mono opacity-90">
-                AWS Network Status
+                STATIONS ACTIVE
               </p>
               <h3 className="text-2xl font-extrabold font-mono mt-1">
-                {metrics.activeStations} <span className="text-sm font-normal opacity-80">/ {metrics.totalStations}</span>
+                {metrics.activeStations}
               </h3>
             </div>
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-xs text-white">
-              <Radio className="w-5 h-5 animate-pulse" />
+            <div className="w-12 h-12 bg-white/20 rounded-xl backdrop-blur-xs flex items-center justify-center text-white">
+              <Radio className="w-6 h-6 animate-pulse" />
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs font-mono">
             <span className="flex items-center gap-1 bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">
-              <CheckCircle2 className="w-3.5 h-3.5" /> 95.1% Operational
+              <CheckCircle2 className="w-3.5 h-3.5" /> +100% Operational
             </span>
             <span className="opacity-90">Avg Health: {metrics.avgHealthScore}%</span>
           </div>
         </div>
 
         {/* KPI 2: Active Disaster Alerts */}
-        <div className="bg-gradient-to-br from-[#0ea5e9] to-[#60a5fa] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-[#0ea5e9]/20 text-white">
+        <div className="bg-gradient-to-br from-[#0284c7] to-[#2563eb] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-blue-500/20 text-white">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider font-mono flex items-center gap-1 opacity-90">
-                <AlertTriangle className="w-3.5 h-3.5" /> Active Anomalies
+                ACTIVE ALERTS
               </p>
               <h3 className="text-2xl font-extrabold font-mono mt-1">
                 {anomalies.filter(a => a.status !== 'RESOLVED').length}
               </h3>
             </div>
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-xs text-white">
-              <BellRing className="w-5 h-5 animate-bounce" />
+            <div className="w-12 h-12 bg-white/20 rounded-xl backdrop-blur-xs flex items-center justify-center text-white">
+              <BellRing className="w-6 h-6 animate-bounce" />
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs font-mono">
-            <span className="bg-white/20 px-2.5 py-0.5 rounded-full font-bold">
-              {anomalies.filter(a => a.severity === 'CRITICAL').length} Critical Unresolved
+            <span className="bg-white/20 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+              <AlertTriangle className="w-3.5 h-3.5" /> Active Monitoring
             </span>
-            <span className="opacity-90 font-semibold">Cloudburst Alert Level 3</span>
           </div>
         </div>
 
-        {/* KPI 3: Telemetry Stream Ingestion */}
-        <div className="bg-gradient-to-br from-[#0ea5e9] to-[#60a5fa] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-[#0ea5e9]/20 text-white">
+        {/* KPI 3: Network Average Health */}
+        <div className="bg-gradient-to-br from-[#0284c7] to-[#2563eb] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-blue-500/20 text-white">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider font-mono opacity-90">
-                Telemetry Rate
+                AVERAGE HEALTH
               </p>
               <h3 className="text-2xl font-extrabold font-mono mt-1">
-                {metrics.telemetryIngestionRate.toLocaleString()} <span className="text-xs font-normal opacity-80">msg/s</span>
+                {metrics.avgHealthScore}%
               </h3>
             </div>
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-xs text-white">
-              <Activity className="w-5 h-5" />
+            <div className="w-12 h-12 bg-white/20 rounded-xl backdrop-blur-xs flex items-center justify-center text-white">
+              <Activity className="w-6 h-6" />
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs font-mono">
-            <span className="bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">Socket.io Low Latency</span>
-            <span className="opacity-90">Latency: 18ms</span>
+            <span className="bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">✓ 0% False Alarms</span>
           </div>
         </div>
 
-        {/* KPI 4: ML Model F1 Performance */}
-        <div className="bg-gradient-to-br from-[#0ea5e9] to-[#60a5fa] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-[#0ea5e9]/20 text-white">
+        {/* KPI 4: Anomalies Detected */}
+        <div className="bg-gradient-to-br from-[#0284c7] to-[#2563eb] rounded-2xl p-4 relative overflow-hidden group transition-all shadow-md shadow-blue-500/20 text-white">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider font-mono opacity-90">
-                ML Model Precision
+                ANOMALIES DETECTED
               </p>
               <h3 className="text-2xl font-extrabold font-mono mt-1">
-                {metrics.modelAccuracyF1}% <span className="text-xs font-normal opacity-80">F1</span>
+                124
               </h3>
             </div>
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-xs text-white">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="w-12 h-12 bg-white/20 rounded-xl backdrop-blur-xs flex items-center justify-center text-white">
+              <ShieldCheck className="w-6 h-6" />
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs font-mono">
-            <span className="opacity-90">False Alarm: 1.2%</span>
-            <span className="bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">SHAP Explainable</span>
+            <span className="bg-white/20 px-2.5 py-0.5 rounded-full font-semibold">4-Level AI Active</span>
           </div>
         </div>
 
