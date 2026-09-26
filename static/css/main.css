@@ -13,10 +13,10 @@
     --bg-sidebar-border: #e2e8f0;
     --sidebar-text-title: #64748b;
     --sidebar-link: #475569;
-    --sidebar-link-hover: #1d4ed8;
-    --sidebar-link-hover-bg: #eff6ff;
-    --sidebar-link-active-bg: rgba(15, 43, 92, 0.08);
-    --sidebar-link-active-color: #0f2b5c;
+    --sidebar-link-hover: #0ea5e9;
+    --sidebar-link-hover-bg: #f0f9ff;
+    --sidebar-link-active-bg: rgba(14, 165, 233, 0.12);
+    --sidebar-link-active-color: #0284c7;
 
     /* Typography */
     --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -26,15 +26,15 @@
     --text-primary: #0f172a;
     --text-secondary: #334155;
     --text-muted: #64748b;
-    --text-accent: #1d4ed8;
+    --text-accent: #0ea5e9;
 
     /* Brand Accent Colors */
-    --accent-teal: #0f2b5c;
-    --accent-teal-dark: #0a1e42;
-    --accent-blue: #1d4ed8;
-    --accent-indigo: #1e40af;
-    --accent-purple: #3b82f6;
-    --accent-dark-blue: #0f2b5c;
+    --accent-teal: #0ea5e9;
+    --accent-teal-dark: #0284c7;
+    --accent-blue: #60a5fa;
+    --accent-indigo: #3b82f6;
+    --accent-purple: #818cf8;
+    --accent-dark-blue: #0284c7;
 
     /* Status & Severity Colors */
     --status-healthy: #16a34a;
@@ -56,7 +56,7 @@
 
     /* Classifications */
     --cls-normal: #16a34a;
-    --cls-weather: #0f2b5c;
+    --cls-weather: #0ea5e9;
     --cls-fault: #d97706;
     --cls-data: #1d4ed8;
 }
@@ -130,13 +130,13 @@ a:hover {
     width: 38px;
     height: 38px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #0f2b5c 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, #60a5fa 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.15rem;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(15, 43, 92, 0.3);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
 }
 
 .brand-text h1 {
@@ -421,14 +421,14 @@ a:hover {
 
 .stat-card-teal,
 .lexa-stat-card {
-    background: linear-gradient(135deg, #0f2b5c 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, #60a5fa 100%);
     border-radius: 16px;
     padding: 1.35rem;
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 6px 18px rgba(15, 43, 92, 0.25);
+    box-shadow: 0 6px 18px rgba(14, 165, 233, 0.25);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     position: relative;
     overflow: hidden;
@@ -437,7 +437,7 @@ a:hover {
 .stat-card-teal:hover,
 .lexa-stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(29, 78, 216, 0.35);
+    box-shadow: 0 10px 24px rgba(96, 165, 250, 0.35);
 }
 
 .stat-card-teal::before,
@@ -661,19 +661,19 @@ a:hover {
 }
 
 .btn-primary-custom {
-    background: linear-gradient(135deg, #0f2b5c 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, #60a5fa 100%);
     color: #ffffff;
     border-radius: 30px;
     padding: 8px 18px;
     font-weight: 700;
-    box-shadow: 0 4px 14px rgba(15, 43, 92, 0.25);
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25);
 }
 
 .btn-primary-custom:hover {
-    background: linear-gradient(135deg, #0a1e42 0%, #1e40af 100%);
+    background: linear-gradient(135deg, #0284c7 0%, #3b82f6 100%);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(29, 78, 216, 0.35);
+    box-shadow: 0 6px 18px rgba(96, 165, 250, 0.35);
 }
 
 .btn-secondary-custom {
